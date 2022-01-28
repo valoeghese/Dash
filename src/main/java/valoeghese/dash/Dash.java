@@ -10,19 +10,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Dash implements ModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger("Dash");
-	public static final ResourceLocation DASH_PACKET = new ResourceLocation("dash", "dash_action");
-	public static final ResourceLocation RESET_TIMER_PACKET = new ResourceLocation("dash", "update_timer");
-	public static long dashCooldown = 20L; // 1 second (20 ticks)
+	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
+	public static final ResourceLocation DASH_PACKET = new ResourceLocation("dtdash", "dash_action");
+	public static final ResourceLocation RESET_TIMER_PACKET = new ResourceLocation("dtdash", "update_timer");
 
+	// magic numbers for networking
 	public static final int FORWARD = 0;
 	public static final int BACKWARDS = 1;
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
 
+	public static DashConfig config;
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("*dashing noises*");
+		config = DashConfig.loadOrCreate();
 
 		ServerPlayNetworking.registerGlobalReceiver(DASH_PACKET, (server, player, handler, buf, responseSender) -> {
 			long time = player.level.getGameTime();
@@ -30,31 +33,35 @@ public class Dash implements ModInitializer {
 			byte dir = buf.readByte();
 
 			server.execute(() -> {
-				if (time - tracker.getLastDash() >= dashCooldown) {
+				if (player.isOnGround() && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
 					tracker.setLastDash(time);
 
-					Vec3 look = player.getLookAngle().multiply(1.3, 0, 1.3).normalize();
-					//System.out.println(dir + " " + look + " " + Thread.currentThread());
+					double str = config.strength();
+					double yV = config.yVelocity();
+
+					Vec3 look = player.getLookAngle().multiply(str, 0, str).normalize();
 
 					switch (dir) {
 					case FORWARD:
-						player.push(look.x, 0.3, look.z);
+						player.push(look.x, yV, look.z);
 						break;
 					case BACKWARDS:
-						player.push(-look.x, 0.3, -look.z);
+						player.push(-look.x, yV, -look.z);
 						break;
 					case LEFT:
-						player.push(look.z, 0.3, -look.x);
+						player.push(look.z, yV, -look.x);
 						break;
 					case RIGHT:
-						player.push(-look.z, 0.3, look.x);
+						player.push(-look.z, yV, look.x);
 						break;
 					}
 
 					player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), player.getDeltaMovement()));
 
-					player.resetAttackStrengthTicker();
-					ServerPlayNetworking.send(player, RESET_TIMER_PACKET, PacketByteBufs.create());
+					if (config.resetAttack()) {
+						player.resetAttackStrengthTicker();
+						ServerPlayNetworking.send(player, RESET_TIMER_PACKET, PacketByteBufs.create());
+					}
 				}
 			});
 		});

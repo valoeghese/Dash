@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "dash",
+  "id": "dtdash",
   "version": "${version}",
 
-  "name": "Dash",
+  "name": "Double-Tap Dash",
   "description": "Enhance combat with a simple dash mechanic!",
   "authors": [
     "Valoeghese"
@@ -14,7 +14,7 @@
   },
 
   "license": "LGPL-3.0-Only",
-  "icon": "assets/dash/icon.png",
+  "icon": "assets/dtdash/icon.png",
 
   "environment": "*",
   "entrypoints": {

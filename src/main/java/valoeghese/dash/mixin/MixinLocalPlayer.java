@@ -7,6 +7,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Direction;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,11 +16,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valoeghese.dash.Dash;
+import valoeghese.dash.DashTracker;
 import valoeghese.dash.client.DashClient;
 import valoeghese.dash.client.DoubleTapHandler;
 
 @Mixin(LocalPlayer.class)
-public abstract class MixinLocalPlayer extends AbstractClientPlayer {
+public abstract class MixinLocalPlayer extends AbstractClientPlayer implements DashTracker {
 	public MixinLocalPlayer(ClientLevel clientLevel, GameProfile gameProfile) {
 		super(clientLevel, gameProfile);
 	}
@@ -39,10 +41,21 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer {
 	private void afterAiStep(CallbackInfo ci) {
 		long ticks = this.level.getGameTime();
 
-		if (ticks - this.dash_lastClientDashTicks >= Dash.dashCooldown) {
+		if (this.getDashCooldown() >= 1.0f) {
 			if (DashClient.tryDash()) {
 				this.dash_lastClientDashTicks = ticks;
 			}
 		}
+	}
+
+	@Override
+	public void setLastDash(long time) {
+		this.dash_lastClientDashTicks = time;
+	}
+
+	@Override
+	public float getDashCooldown() {
+		long dTicks = this.level.getGameTime() - this.dash_lastClientDashTicks;
+		return (float) (dTicks) / Dash.config.cooldown();
 	}
 }

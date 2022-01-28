@@ -2,6 +2,7 @@ package valoeghese.dash.client;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import valoeghese.dash.Dash;
 
 // Yes. Polling every frame seemed like an easier solution to getting a double tap than making a new keybind that mimicks the old one and using the vanilla system.
 // Rebinding that would be annoying. Could have used consume click on the original but you never know if other mods are trying to use that. Thus, this soln.
@@ -13,6 +14,7 @@ public class DoubleTapHandler {
 	}
 
 	private final KeyMapping mapping;
+
 	private boolean wasDown;
 	private long[] downTimes = new long[2];
 	private int selected; // actually a bit
@@ -30,7 +32,7 @@ public class DoubleTapHandler {
 
 	public boolean doubleTapped() {
 		long dt = this.downTimes[0] - this.downTimes[1];
-		return dt <= MAX_TIME_DELAY && dt >= -MAX_TIME_DELAY; // probably marginally faster than abs
+		return dt <= maxTimeDelayMillis && dt >= -maxTimeDelayMillis; // probably marginally faster than abs
 	}
 
 	public void reset() {
@@ -39,7 +41,7 @@ public class DoubleTapHandler {
 		this.downTimes[1] = wayBack - 100000L;
 	}
 
-	private static final long MAX_TIME_DELAY = 200; // 0.2 seconds
+	private static final long maxTimeDelayMillis = Dash.config.sensitivity();
 
 	public static final DoubleTapHandler FORWARD_DASH = new DoubleTapHandler(Minecraft.getInstance().options.keyUp);
 	public static final DoubleTapHandler BACKWARDS_DASH = new DoubleTapHandler(Minecraft.getInstance().options.keyDown);
