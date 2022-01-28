@@ -4,9 +4,11 @@
   "package": "valoeghese.dash.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "MixinServerPlayer"
   ],
   "client": [
-    "MixinLocalPlayer"
+    "MixinLocalPlayer",
+    "MixinMinecraft"
   ],
   "injectors": {
     "defaultRequire": 1
