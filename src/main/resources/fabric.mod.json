@@ -20,6 +20,9 @@
   "entrypoints": {
     "main": [
       "valoeghese.dash.Dash"
+    ],
+    "client": [
+      "valoeghese.dash.client.DashClient"
     ]
   },
   "mixins": [

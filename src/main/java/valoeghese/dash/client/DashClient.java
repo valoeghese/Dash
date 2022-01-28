@@ -1,12 +1,19 @@
 package valoeghese.dash.client;
 
+import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import valoeghese.dash.Dash;
 
-public class DashClient {
+public class DashClient implements ClientModInitializer {
+	@Override
+	public void onInitializeClient() {
+		ClientPlayNetworking.registerGlobalReceiver(Dash.RESET_TIMER_PACKET, (client, handler, buf, responseSender) -> {
+			client.player.resetAttackStrengthTicker();
+		});
+	}
+
 	// This code could be much better beautified by extracting commonalities but it's not gonna change any time soon and it's 1am
 	public static boolean tryDash() {
 		boolean attempted = false;
