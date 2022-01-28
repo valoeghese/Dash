@@ -19,7 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "valogehese.dash.Dash"
+      "valoeghese.dash.Dash"
     ]
   },
   "mixins": [
