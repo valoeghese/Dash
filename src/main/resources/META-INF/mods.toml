@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[33,)"
+license="LGPLv3"
+issueTrackerURL="https://github.com/valoeghese/Dash/issues"
+[[mods]]
+modId="dtdash"
+version="1.0.0"
+displayName="Double-Tap Dash"
+description='''
+Enhance combat with a simple dash mechanic!
+'''
+authors="Valoeghese"
+displayURL="https://github.com/valoeghese/Dash/tree/1.18-forge"
+logoFile="assets/dtdash/icon.png"
+[[dependencies.dtdash]]
+modId = "forge"
+mandatory = true
+versionRange = "[36.0.4,)"
+ordering = "NONE"
+side = "BOTH"

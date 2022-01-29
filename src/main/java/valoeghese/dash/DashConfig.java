@@ -1,7 +1,6 @@
 package valoeghese.dash;
 
-import net.fabricmc.loader.api.FabricLoader;
-import valoeghese.dash.client.DoubleTapHandler;
+import net.minecraftforge.fml.loading.FMLConfig;
 
 import java.io.File;
 import java.io.FileReader;
@@ -17,7 +16,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		properties.setProperty("double_tap_sensitivity", "0.2");
 		properties.setProperty("resets_attack", "true");
 
-		File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
+		File file = new File(FMLConfig.defaultConfigPath(), "dash.properties");
 
 		try {
 			if (file.isFile()) {

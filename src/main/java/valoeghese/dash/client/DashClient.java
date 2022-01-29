@@ -1,43 +1,27 @@
 package valoeghese.dash.client;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import valoeghese.dash.Dash;
+import net.minecraftforge.network.NetworkEvent;
 import valoeghese.dash.DashTracker;
+import valoeghese.dash.network.DashNetworking;
+import valoeghese.dash.network.ServerboundDashPacket;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
+import java.util.function.Supplier;
 
-public class DashClient implements ClientModInitializer {
+public class DashClient {
 	private static final ResourceLocation DASH_ICONS = new ResourceLocation("dtdash", "textures/dash_icons.png");
 
-	//private NativeImage dashIcons;
-
-	@Override
-	public void onInitializeClient() {
-		ClientPlayNetworking.registerGlobalReceiver(Dash.RESET_TIMER_PACKET, (client, handler, buf, responseSender) -> {
-			client.player.resetAttackStrengthTicker();
-		});
+	public static void resetAttackTimer(Supplier<NetworkEvent.Context> ctx) {
+		Minecraft.getInstance().player.resetAttackStrengthTicker();
+		ctx.get().setPacketHandled(true);
 	}
 
 	public static void renderBar(PoseStack stack, Gui gui) {
@@ -68,34 +52,32 @@ public class DashClient implements ClientModInitializer {
 
 		if (DoubleTapHandler.FORWARD_DASH.doubleTapped()) {
 			DoubleTapHandler.FORWARD_DASH.reset();
-			sendDash(Dash.FORWARD);
+			sendDash(DashNetworking.FORWARD);
 			attempted = true;
 		}
 
 		if (DoubleTapHandler.BACKWARDS_DASH.doubleTapped()) {
 			DoubleTapHandler.BACKWARDS_DASH.reset();
-			sendDash(Dash.BACKWARDS);
+			sendDash(DashNetworking.BACKWARDS);
 			attempted = true;
 		}
 
 		if (DoubleTapHandler.LEFT_DASH.doubleTapped()) {
 			DoubleTapHandler.LEFT_DASH.reset();
-			sendDash(Dash.LEFT);
+			sendDash(DashNetworking.LEFT);
 			attempted = true;
 		}
 
 		if (DoubleTapHandler.RIGHT_DASH.doubleTapped()) {
 			DoubleTapHandler.RIGHT_DASH.reset();
-			sendDash(Dash.RIGHT);
+			sendDash(DashNetworking.RIGHT);
 			attempted = true;
 		}
 
 		return attempted;
 	}
 
-	private static void sendDash(int direction) {
-		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeByte(direction);
-		ClientPlayNetworking.send(Dash.DASH_PACKET, buf);
+	private static void sendDash(byte direction) {
+		DashNetworking.DASH_CHANNEL.sendToServer(new ServerboundDashPacket(direction));
 	}
 }

@@ -1,61 +1,132 @@
-plugins {
-	id 'fabric-loom' version '0.11-SNAPSHOT'
-	id 'maven-publish'
+buildscript {
+    repositories {
+        maven { url = 'https://files.minecraftforge.net/maven' }
+		maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url = 'https://maven.parchmentmc.org' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.+', changing: true
+		classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath 'org.parchmentmc:librarian:1.+'
+    }
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+apply plugin: 'net.minecraftforge.gradle'
+// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'idea'
+apply plugin: 'org.spongepowered.mixin'
+apply plugin: 'maven-publish'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
+version = "${mod_version}-forge"
+group = 'valoeghese' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = 'dtdash'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 repositories {
-	maven { url = 'https://maven.parchmentmc.org' }
+}
+
+minecraft {
+    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
+
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
 dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.layered() {
-		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-${minecraft_version}:${parchment_version}@zip")
-	}
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// APIs
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
+    // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
+    // The userdev artifact is a special name and will get all sorts of transformations applied to it.
+    minecraft "net.minecraftforge:forge:${minecraft_version}-39.0.19"
+    annotationProcessor 'org.spongepowered:mixin:0.8.4:processor'
 }
 
-processResources {
-	inputs.property "version", project.version
-
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
-	}
-}
-
-tasks.withType(JavaCompile).configureEach {
-	it.options.release = 17
-}
-
-java {
-}
-
+// Example for how to get properties into the manifest for reading by the runtime..
 jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
-	}
+    manifest {
+        attributes([
+            "Specification-Title": "dtdash-forge",
+            "Specification-Vendor": "Valoeghese",
+            "Specification-Version": "1.0.0",
+            "Implementation-Title": project.name,
+            "Implementation-Version": "${version}",
+            "Implementation-Vendor" : "Valoeghese",
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
 }
 
-// configure the maven publication
+// Example configuration to allow publishing using the maven-publish task
+// we define a custom artifact that is sourced from the reobfJar output task
+// and then declare that to be published
+// Note you'll need to add a repository here
+def reobfFile = file("$buildDir/reobfJar/output.jar")
+def reobfArtifact = artifacts.add('default', reobfFile) {
+    type 'jar'
+    builtBy 'reobfJar'
+}
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-	repositories {
-	}
+    publications {
+        mavenJava(MavenPublication) {
+            artifact reobfArtifact
+        }
+    }
+    repositories {
+        maven {
+            url "file:///${project.projectDir}/mcmodsrepo"
+        }
+    }
 }
