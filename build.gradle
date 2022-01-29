@@ -35,7 +35,10 @@ minecraft {
     // These can be tweaked, removed, or duplicated as needed.
     runs {
         client {
+            properties 'mixin.env.remapRefMap': 'true'
+            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
             workingDirectory project.file('run')
+            arg "-mixin.config="+archivesBaseName+".mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -51,7 +54,10 @@ minecraft {
         }
 
         server {
-            workingDirectory project.file('run')
+            properties 'mixin.env.remapRefMap': 'true'
+            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
+            args "-mixin.config=${archivesBaseName}.mixins.json", "-mixin.config=${archivesBaseName}_forge.mixins.json"
+            arg "-mixin.config="+archivesBaseName+".mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
@@ -69,13 +75,13 @@ minecraft {
         data {
             workingDirectory project.file('run')
 
+            properties 'mixin.env.remapRefMap': 'true'
+            property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
+            property 'forge.logging.console.level', 'debug'
+            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
+
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
 
             mods {
                 examplemod {
@@ -129,4 +135,8 @@ publishing {
             url "file:///${project.projectDir}/mcmodsrepo"
         }
     }
+}
+
+mixin {
+    add sourceSets.main, "${archivesBaseName}.refmap.json"
 }
