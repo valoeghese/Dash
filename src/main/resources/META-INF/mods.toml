@@ -11,7 +11,7 @@ Enhance combat with a simple dash mechanic!
 '''
 authors="Valoeghese"
 displayURL="https://github.com/valoeghese/Dash/tree/1.18-forge"
-logoFile="assets/dtdash/icon.png"
+logoFile="icon.png"
 [[dependencies.dtdash]]
 modId = "forge"
 mandatory = true
