@@ -1,5 +1,7 @@
 package valoeghese.dash;
 
+import net.minecraftforge.common.ForgeConfig;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.loading.FMLConfig;
 
 import java.io.File;
@@ -16,7 +18,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		properties.setProperty("double_tap_sensitivity", "0.2");
 		properties.setProperty("resets_attack", "true");
 
-		File file = new File(FMLConfig.defaultConfigPath(), "dash.properties");
+		File file = new File(new File(FMLConfig.defaultConfigPath()).getParent(), "config/dash.properties");
 
 		try {
 			if (file.isFile()) {
