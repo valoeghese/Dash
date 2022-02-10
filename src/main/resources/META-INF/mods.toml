@@ -4,7 +4,7 @@ license="LGPLv3"
 issueTrackerURL="https://github.com/valoeghese/Dash/issues"
 [[mods]]
 modId="dtdash"
-version="1.0.1"
+version="1.0.2"
 displayName="Double-Tap Dash"
 description='''
 Enhance combat with a simple dash mechanic!
