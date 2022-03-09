@@ -47,6 +47,7 @@ public class DashInputHandler {
 
 	public boolean shouldDash(boolean dashKeyPressed) {
 		if (!this.enabled) return false; // disable!
+		if (!Dash.canDash(Minecraft.getInstance().player)) return false;
 		// if dash key pressed or double tapped
 		return (dashKeyPressed && this.mapping.isDown()) || this.doubleTapped();
 	}

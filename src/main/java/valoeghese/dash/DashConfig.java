@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public record DashConfig(double strength, double yVelocity, float cooldown, boolean resetAttack, long sensitivity, // V1.0 Config Options
-						 float exhaustion, boolean doubleTapDash, boolean[] dashDirections/*Ordered by Dash constants*/ // V1.1 Config Options
+						 float exhaustion, boolean doubleTapDash, boolean[] dashDirections, boolean dashMidair /*Ordered by Dash constants*/ // V1.1 Config Options
 						 ) {
 	public static DashConfig loadOrCreate() {
 		// V1.0
@@ -25,6 +25,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		properties.setProperty("backwards_dash", "true");
 		properties.setProperty("left_dash", "true");
 		properties.setProperty("right_dash", "true");
+		properties.setProperty("dash_midair", "false");
 
 		File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
 
@@ -57,6 +58,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		float exhaustion = 0.0f;
 		boolean doubleTapDash = true;
 		boolean[] dashDirections = {true, true, true, true};
+		boolean dashMidair = false;
 
 		try {
 			// V1.0
@@ -74,13 +76,14 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 					Boolean.parseBoolean(properties.getProperty("left_dash")),
 					Boolean.parseBoolean(properties.getProperty("right_dash"))
 			};
+			dashMidair = Boolean.parseBoolean(properties.getProperty("dash_midair"));
 		} catch (Exception e) {
 			Dash.LOGGER.error("Error parsing dash config:");
 			e.printStackTrace();
 		}
 
 		return new DashConfig(strength, yVelocity, cooldown, resetAttack, sensitivity, // V1.0
-				exhaustion, doubleTapDash, dashDirections); // V1.1
+				exhaustion, doubleTapDash, dashDirections, dashMidair); // V1.1
 	}
 
 	private static Properties properties = new Properties();

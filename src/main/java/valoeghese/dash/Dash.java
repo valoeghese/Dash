@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,10 @@ public class Dash implements ModInitializer {
 
 	public static DashConfig config;
 
+	public static boolean canDash(Player player) {
+		return player.isOnGround() || config.dashMidair();
+	}
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("*dashing noises*");
@@ -33,7 +38,7 @@ public class Dash implements ModInitializer {
 			byte dir = buf.readByte();
 
 			server.execute(() -> {
-				if (player.isOnGround() && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
+				if (canDash(player) && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
 					tracker.setLastDash(time);
 
 					double str = config.strength();

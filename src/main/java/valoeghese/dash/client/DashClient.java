@@ -28,19 +28,20 @@ public class DashClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(Dash.RESET_TIMER_PACKET, (client, handler, buf, responseSender) -> {
 			client.player.resetAttackStrengthTicker();
 		});
-
-		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.dtdash.dash",
-				InputConstants.Type.KEYSYM,
-				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.movement"
-		));
 	}
 
 	/**
 	 * Needs to be run on load complete, as options are not initialised and loaded at init time.
 	 */
 	public static void onLoadComplete() {
+		// register dash key here so it's last on the list instead of first
+		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+				"key.dtdash.dash",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.movement"
+		));
+
 		// If globally enabled
 		DashInputHandler.FORWARD_DASH.setEnabled(Dash.config.dashDirections()[Dash.FORWARD]);
 		DashInputHandler.BACKWARDS_DASH.setEnabled(Dash.config.dashDirections()[Dash.BACKWARDS]);
