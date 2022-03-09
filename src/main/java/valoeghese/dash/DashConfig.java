@@ -14,7 +14,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 	public static DashConfig loadOrCreate() {
 		// V1.0
 		properties.setProperty("strength", "1.3");
-		properties.setProperty("y_velocity", "0.3");
+		properties.setProperty("y_velocity", "0.4");
 		properties.setProperty("cooldown", "1.0");
 		properties.setProperty("double_tap_sensitivity", "0.2");
 		properties.setProperty("resets_attack", "true");

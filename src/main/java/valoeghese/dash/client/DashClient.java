@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.loader.api.FabricLoader;
@@ -42,7 +43,7 @@ public class DashClient implements ClientModInitializer {
 	/**
 	 * Options stuff needs to be run here, as options are not initialised and loaded at init time.
 	 */
-	public static KeyMapping onOptionsLoad(Options loadedOptions) {
+	public static void onOptionsLoad(Options loadedOptions) {
 		options = loadedOptions;
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment()) Dash.LOGGER.info("Registering Keybind");
@@ -53,15 +54,15 @@ public class DashClient implements ClientModInitializer {
 		DashInputHandler.LEFT_DASH.setEnabled(Dash.config.dashDirections()[Dash.LEFT]);
 		DashInputHandler.RIGHT_DASH.setEnabled(Dash.config.dashDirections()[Dash.RIGHT]);
 
-		options = null;
-
-		// register dash key here so it's last on the list instead of first
-		return dashKey = new KeyMapping(
+		// register dash key
+		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
 				"key.dtdash.dash",
 				InputConstants.Type.KEYSYM,
 				InputConstants.UNKNOWN.getValue(), // not bound by default
 				"key.categories.movement"
-		);
+		));
+
+		options = null;
 	}
 
 	public static void renderBar(PoseStack stack, Gui gui) {
