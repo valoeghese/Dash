@@ -7,6 +7,7 @@
     "MixinServerPlayer"
   ],
   "client": [
+    "MixinOptions",
     "MixinGui",
     "MixinLocalPlayer",
     "MixinMinecraft"

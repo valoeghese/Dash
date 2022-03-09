@@ -5,11 +5,12 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.FriendlyByteBuf;
@@ -19,9 +20,17 @@ import net.minecraft.world.entity.player.Player;
 import valoeghese.dash.Dash;
 import valoeghese.dash.DashTracker;
 
+import javax.annotation.Nullable;
+
 public class DashClient implements ClientModInitializer {
 	private static final ResourceLocation DASH_ICONS = new ResourceLocation("dtdash", "textures/dash_icons.png");
 	private static KeyMapping dashKey;
+	/**
+	 * Options hack.
+	 * Temporarily stores the options during onOptionsLoad.
+	 */
+	@Nullable
+	public static Options options;
 
 	@Override
 	public void onInitializeClient() {
@@ -31,22 +40,28 @@ public class DashClient implements ClientModInitializer {
 	}
 
 	/**
-	 * Needs to be run on load complete, as options are not initialised and loaded at init time.
+	 * Options stuff needs to be run here, as options are not initialised and loaded at init time.
 	 */
-	public static void onLoadComplete() {
-		// register dash key here so it's last on the list instead of first
-		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.dtdash.dash",
-				InputConstants.Type.KEYSYM,
-				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.movement"
-		));
+	public static KeyMapping onOptionsLoad(Options loadedOptions) {
+		options = loadedOptions;
+
+		if (FabricLoader.getInstance().isDevelopmentEnvironment()) Dash.LOGGER.info("Registering Keybind");
 
 		// If globally enabled
 		DashInputHandler.FORWARD_DASH.setEnabled(Dash.config.dashDirections()[Dash.FORWARD]);
 		DashInputHandler.BACKWARDS_DASH.setEnabled(Dash.config.dashDirections()[Dash.BACKWARDS]);
 		DashInputHandler.LEFT_DASH.setEnabled(Dash.config.dashDirections()[Dash.LEFT]);
 		DashInputHandler.RIGHT_DASH.setEnabled(Dash.config.dashDirections()[Dash.RIGHT]);
+
+		options = null;
+
+		// register dash key here so it's last on the list instead of first
+		return dashKey = new KeyMapping(
+				"key.dtdash.dash",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.movement"
+		);
 	}
 
 	public static void renderBar(PoseStack stack, Gui gui) {

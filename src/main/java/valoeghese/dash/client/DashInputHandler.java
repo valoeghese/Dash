@@ -47,9 +47,9 @@ public class DashInputHandler {
 
 	public boolean shouldDash(boolean dashKeyPressed) {
 		if (!this.enabled) return false; // disable!
-		if (!Dash.canDash(Minecraft.getInstance().player)) return false;
 		// if dash key pressed or double tapped
-		return (dashKeyPressed && this.mapping.isDown()) || this.doubleTapped();
+		return (dashKeyPressed && this.mapping.isDown() && Dash.canDash(Minecraft.getInstance().player) /*This check is done here for key, and in measure() for double-tap*/)
+				|| this.doubleTapped();
 	}
 
 	private boolean doubleTapped() {
@@ -66,8 +66,8 @@ public class DashInputHandler {
 
 	private static final long maxTimeDelayMillis = Dash.config.sensitivity();
 
-	public static final DashInputHandler FORWARD_DASH = new DashInputHandler(Minecraft.getInstance().options.keyUp);
-	public static final DashInputHandler BACKWARDS_DASH = new DashInputHandler(Minecraft.getInstance().options.keyDown);
-	public static final DashInputHandler LEFT_DASH = new DashInputHandler(Minecraft.getInstance().options.keyLeft);
-	public static final DashInputHandler RIGHT_DASH = new DashInputHandler(Minecraft.getInstance().options.keyRight);
+	public static final DashInputHandler FORWARD_DASH = new DashInputHandler(DashClient.options.keyUp);
+	public static final DashInputHandler BACKWARDS_DASH = new DashInputHandler(DashClient.options.keyDown);
+	public static final DashInputHandler LEFT_DASH = new DashInputHandler(DashClient.options.keyLeft);
+	public static final DashInputHandler RIGHT_DASH = new DashInputHandler(DashClient.options.keyRight);
 }
