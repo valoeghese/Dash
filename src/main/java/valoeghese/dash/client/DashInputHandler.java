@@ -6,8 +6,8 @@ import valoeghese.dash.Dash;
 
 // Yes. Polling every frame seemed like an easier solution to getting a double tap than making a new keybind that mimicks the old one and using the vanilla system.
 // Rebinding that would be annoying. Could have used consume click on the original but you never know if other mods are trying to use that. Thus, this soln.
-public class DoubleTapHandler {
-	public DoubleTapHandler(KeyMapping mapping) {
+public class DashInputHandler {
+	public DashInputHandler(KeyMapping mapping) {
 		this.mapping = mapping;
 		// to reduce very occasional weird triggering issues at random instances that are extremely unlikely but possible to happen
 		this.reset();
@@ -15,11 +15,26 @@ public class DoubleTapHandler {
 
 	private final KeyMapping mapping;
 
+	private boolean enabled = true; // whether the dash direction specified by this input handler is enabled
 	private boolean wasDown;
 	private long[] downTimes = new long[2];
 	private int selected; // actually a bit
 
+	/**
+	 * Set whether functionality is enabled.
+	 */
+	public void setEnabled(boolean enabled) {
+		if (this.enabled = enabled) { // set value and check
+			this.reset(); // if it's been just now enabled, reset just in case to make sure it's in a 'ready' state
+		}
+	}
+
+	/**
+	 * Measures the taps in order to detect a double tap.
+	 */
 	public void measure() {
+		if (!this.enabled || !Dash.config.doubleTapDash()) return; // disable if not enabled or double tapping is not enabled.
+
 		boolean isDown = this.mapping.isDown();
 
 		if (isDown && !this.wasDown) { // if newly pressed
@@ -30,7 +45,14 @@ public class DoubleTapHandler {
 		this.wasDown = isDown;
 	}
 
-	public boolean doubleTapped() {
+	public boolean shouldDash(boolean dashKeyPressed) {
+		if (!this.enabled) return false; // disable!
+		// if dash key pressed or double tapped
+		return (dashKeyPressed && this.mapping.isDown()) || this.doubleTapped();
+	}
+
+	private boolean doubleTapped() {
+		if (!Dash.config.doubleTapDash()) return false; // if double tap is disabled, don't bother checking!
 		long dt = this.downTimes[0] - this.downTimes[1];
 		return dt <= maxTimeDelayMillis && dt >= -maxTimeDelayMillis; // probably marginally faster than abs
 	}
@@ -43,8 +65,8 @@ public class DoubleTapHandler {
 
 	private static final long maxTimeDelayMillis = Dash.config.sensitivity();
 
-	public static final DoubleTapHandler FORWARD_DASH = new DoubleTapHandler(Minecraft.getInstance().options.keyUp);
-	public static final DoubleTapHandler BACKWARDS_DASH = new DoubleTapHandler(Minecraft.getInstance().options.keyDown);
-	public static final DoubleTapHandler LEFT_DASH = new DoubleTapHandler(Minecraft.getInstance().options.keyLeft);
-	public static final DoubleTapHandler RIGHT_DASH = new DoubleTapHandler(Minecraft.getInstance().options.keyRight);
+	public static final DashInputHandler FORWARD_DASH = new DashInputHandler(Minecraft.getInstance().options.keyUp);
+	public static final DashInputHandler BACKWARDS_DASH = new DashInputHandler(Minecraft.getInstance().options.keyDown);
+	public static final DashInputHandler LEFT_DASH = new DashInputHandler(Minecraft.getInstance().options.keyLeft);
+	public static final DashInputHandler RIGHT_DASH = new DashInputHandler(Minecraft.getInstance().options.keyRight);
 }

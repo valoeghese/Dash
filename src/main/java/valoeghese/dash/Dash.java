@@ -62,6 +62,10 @@ public class Dash implements ModInitializer {
 						player.resetAttackStrengthTicker();
 						ServerPlayNetworking.send(player, RESET_TIMER_PACKET, PacketByteBufs.create());
 					}
+
+					// apply exhaustion (affects hunger)
+					// by default this is 0 so won't have any effect
+					player.causeFoodExhaustion(config.exhaustion());
 				}
 			});
 		});

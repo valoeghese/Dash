@@ -1,6 +1,7 @@
 package valoeghese.dash.mixin;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -9,7 +10,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import valoeghese.dash.DashTracker;
-import valoeghese.dash.client.DoubleTapHandler;
+import valoeghese.dash.client.DashClient;
+import valoeghese.dash.client.DashInputHandler;
 
 @Mixin(Minecraft.class)
 public class MixinMinecraft {
@@ -18,10 +20,15 @@ public class MixinMinecraft {
 	@Inject(at = @At("HEAD"), method = "handleKeybinds")
 	private void afterVanillaHandleKeybinds(CallbackInfo ci) {
 		if (this.player.isOnGround() && ((DashTracker) this.player).getDashCooldown() >= 0.98f) {
-			DoubleTapHandler.FORWARD_DASH.measure();
-			DoubleTapHandler.BACKWARDS_DASH.measure();
-			DoubleTapHandler.LEFT_DASH.measure();
-			DoubleTapHandler.RIGHT_DASH.measure();
+			DashInputHandler.FORWARD_DASH.measure();
+			DashInputHandler.BACKWARDS_DASH.measure();
+			DashInputHandler.LEFT_DASH.measure();
+			DashInputHandler.RIGHT_DASH.measure();
 		}
+	}
+
+	@Inject(at = @At("RETURN"), method = "<init>")
+	private void onLoadComplete(GameConfig gameConfig, CallbackInfo info) {
+		DashClient.onLoadComplete();
 	}
 }

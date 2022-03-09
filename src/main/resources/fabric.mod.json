@@ -26,7 +26,7 @@
     ]
   },
   "mixins": [
-    "dash.mixins.json"
+    "dtdash.mixins.json"
   ],
 
   "depends": {
