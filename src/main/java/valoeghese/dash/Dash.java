@@ -24,7 +24,10 @@ public class Dash implements ModInitializer {
 	public static DashConfig config;
 
 	public static boolean canDash(Player player) {
-		return player.isFallFlying() ? config.dashWhileGliding() : (player.isOnGround() || config.dashMidair());
+		if (player.isSwimming()) return config.dashWhileSwimming();
+		if (player.isFallFlying()) return config.dashWhileGliding();
+
+		return player.isOnGround() || config.dashMidair();
 	}
 
 	@Override

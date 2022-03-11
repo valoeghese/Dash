@@ -10,7 +10,7 @@ import java.util.Properties;
 
 public record DashConfig(double strength, double yVelocity, float cooldown, boolean resetAttack, long sensitivity, // V1.0 Config Options
 						 float exhaustion, boolean doubleTapDash, boolean[] dashDirections, boolean dashMidair /*Ordered by Dash constants*/, // V1.1 Config Options
-						 boolean dashWhileGliding, ScreenPosition screenPosition // V1.2 Config Options
+						 boolean dashWhileGliding, boolean dashWhileSwimming, ScreenPosition screenPosition // V1.2 Config Options
 						 ) {
 	public static DashConfig loadOrCreate() {
 		// V1.0
@@ -29,6 +29,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		properties.setProperty("dash_midair", "false");
 		// V1.2
 		properties.setProperty("dash_while_gliding", "false");
+		properties.setProperty("dash_while_swimming", "false");
 		properties.setProperty("icon_x", "8");
 		properties.setProperty("icon_y", "100%-32");
 
@@ -65,6 +66,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		boolean[] dashDirections = {true, true, true, true};
 		boolean dashMidair = false;
 		boolean dashWhileGliding = false;
+		boolean dashWhileSwimming = false;
 		ScreenPosition screenPosition = new ScreenPosition(0, 0, 8, 0, 1, -32);
 
 		try {
@@ -86,6 +88,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 			dashMidair = Boolean.parseBoolean(properties.getProperty("dash_midair"));
 			// V1.2
 			dashWhileGliding = Boolean.parseBoolean(properties.getProperty("dash_while_gliding"));
+			dashWhileSwimming = Boolean.parseBoolean(properties.getProperty("dash_while_swimming"));
 			screenPosition = ScreenPosition.parse(properties.getProperty("icon_x"), properties.getProperty("icon_y"));
 		} catch (Exception e) {
 			Dash.LOGGER.error("Error parsing dash config:");
@@ -94,7 +97,7 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 
 		return new DashConfig(strength, yVelocity, cooldown, resetAttack, sensitivity, // V1.0
 				exhaustion, doubleTapDash, dashDirections, dashMidair, // V1.1
-				dashWhileGliding, screenPosition); // V1.2
+				dashWhileGliding, dashWhileSwimming, screenPosition); // V1.2
 	}
 
 	private static Properties properties = new Properties();
