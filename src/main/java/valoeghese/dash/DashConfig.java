@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 public record DashConfig(double strength, double yVelocity, float cooldown, boolean resetAttack, long sensitivity, // V1.0 Config Options
-						 float exhaustion, boolean doubleTapDash, boolean[] dashDirections, boolean dashMidair /*Ordered by Dash constants*/ // V1.1 Config Options
+						 float exhaustion, boolean doubleTapDash, boolean[] dashDirections, boolean dashMidair /*Ordered by Dash constants*/, // V1.1 Config Options
+						 boolean dashWhileGliding, ScreenPosition screenPosition // V1.2 Config Options
 						 ) {
 	public static DashConfig loadOrCreate() {
 		// V1.0
@@ -26,6 +27,10 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		properties.setProperty("left_dash", "true");
 		properties.setProperty("right_dash", "true");
 		properties.setProperty("dash_midair", "false");
+		// V1.2
+		properties.setProperty("dash_while_gliding", "false");
+		properties.setProperty("icon_x", "8");
+		properties.setProperty("icon_y", "100%-32");
 
 		File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
 
@@ -37,12 +42,12 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 					loaded.load(reader);
 					properties = loaded;
 				}
-			} else {
-				file.createNewFile();
+			}
 
-				try (FileWriter writer = new FileWriter(file)) {
-					properties.store(writer, "Double-Tap Dash mod config. Make sure the server and client have the same settings as the cooldown is not synced.");
-				}
+			file.createNewFile();
+
+			try (FileWriter writer = new FileWriter(file)) {
+				properties.store(writer, "Double-Tap Dash mod config. Make sure the server and client have the same settings as the cooldown is not synced.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -59,6 +64,8 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		boolean doubleTapDash = true;
 		boolean[] dashDirections = {true, true, true, true};
 		boolean dashMidair = false;
+		boolean dashWhileGliding = false;
+		ScreenPosition screenPosition = new ScreenPosition(0, 0, 8, 0, 1, -32);
 
 		try {
 			// V1.0
@@ -77,13 +84,17 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 					Boolean.parseBoolean(properties.getProperty("right_dash"))
 			};
 			dashMidair = Boolean.parseBoolean(properties.getProperty("dash_midair"));
+			// V1.2
+			dashWhileGliding = Boolean.parseBoolean(properties.getProperty("dash_while_gliding"));
+			screenPosition = ScreenPosition.parse(properties.getProperty("icon_x"), properties.getProperty("icon_y"));
 		} catch (Exception e) {
 			Dash.LOGGER.error("Error parsing dash config:");
 			e.printStackTrace();
 		}
 
 		return new DashConfig(strength, yVelocity, cooldown, resetAttack, sensitivity, // V1.0
-				exhaustion, doubleTapDash, dashDirections, dashMidair); // V1.1
+				exhaustion, doubleTapDash, dashDirections, dashMidair, // V1.1
+				dashWhileGliding, screenPosition); // V1.2
 	}
 
 	private static Properties properties = new Properties();

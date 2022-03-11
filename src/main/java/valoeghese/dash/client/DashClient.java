@@ -80,17 +80,24 @@ public class DashClient implements ClientModInitializer {
 				RenderSystem.setShaderTexture(0, texture.getId());
 				// render
 				Window window = Minecraft.getInstance().getWindow();
-				gui.blit(stack, 8, window.getGuiScaledHeight() - 32 - 8, 0, 0, 32, 32); // render the background
-				gui.blit(stack, 8, window.getGuiScaledHeight() - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
+				int x = (int) Dash.config.screenPosition().x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
+				int y = (int) Dash.config.screenPosition().y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
+				System.out.println("x " + x + " y " + y + " oy " + (window.getGuiScaledHeight() - 32));
+
+				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background
+				gui.blit(stack, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
 				stack.popPose();
 			}
 		}
 	}
 
+	public static boolean consumeDash() {
+		return dashKey.consumeClick();
+	}
+
 	// This code could be much better beautified by extracting commonalities but it's not gonna change any time soon and it's 1am
-	public static boolean tryDash() {
+	public static boolean tryDash(boolean dashKeyPressed) {
 		boolean attempted = false;
-		boolean dashKeyPressed = dashKey.consumeClick();
 
 		if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed)) {
 			DashInputHandler.FORWARD_DASH.reset();

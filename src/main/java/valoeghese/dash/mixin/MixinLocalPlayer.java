@@ -34,9 +34,10 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements D
 	@Inject(at = @At("RETURN"), method = "aiStep")
 	private void afterAiStep(CallbackInfo ci) {
 		long ticks = this.level.getGameTime();
+		boolean dashKeyPressed = DashClient.consumeDash();
 
 		if (this.getDashCooldown() >= 1.0f) {
-			if (DashClient.tryDash()) {
+			if (DashClient.tryDash(dashKeyPressed)) {
 				this.dash_lastClientDashTicks = ticks;
 			}
 		}
