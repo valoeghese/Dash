@@ -82,7 +82,6 @@ public class DashClient implements ClientModInitializer {
 				Window window = Minecraft.getInstance().getWindow();
 				int x = (int) Dash.config.screenPosition().x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 				int y = (int) Dash.config.screenPosition().y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
-				System.out.println("x " + x + " y " + y + " oy " + (window.getGuiScaledHeight() - 32));
 
 				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background
 				gui.blit(stack, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
