@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 public record DashConfig(double strength, double yVelocity, float cooldown, boolean resetAttack, long sensitivity, // V1.0 Config Options
@@ -37,12 +38,18 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 
 		try {
 			if (file.isFile()) {
-				Properties loaded = new Properties(properties);
+				Properties loaded = new Properties();
 
 				try (FileReader reader = new FileReader(file)) {
 					loaded.load(reader);
-					properties = loaded;
 				}
+
+				// actually store it rather than using "defaults" so it's written to the file
+				for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+					loaded.putIfAbsent(entry.getKey(), entry.getValue());
+				}
+
+				properties = loaded;
 			}
 
 			file.createNewFile();
