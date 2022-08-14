@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.player.ProfilePublicKey;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -12,8 +13,8 @@ import valoeghese.dash.DashTracker;
 
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player implements DashTracker {
-	public MixinServerPlayer(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
-		super(level, blockPos, f, gameProfile); // duck constructor
+	public MixinServerPlayer(Level level, BlockPos blockPos, float f, GameProfile gameProfile, ProfilePublicKey key) {
+		super(level, blockPos, f, gameProfile, key); // duck constructor
 	}
 
 	@Unique
