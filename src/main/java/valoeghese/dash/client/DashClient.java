@@ -12,7 +12,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -65,8 +65,9 @@ public class DashClient implements ClientModInitializer {
 		options = null;
 	}
 
-	public static void renderBar(PoseStack stack, Gui gui) {
+	public static void renderBar(GuiGraphics gui) {
 		Player player = Minecraft.getInstance().player;
+		PoseStack stack = gui.pose();
 
 		if (player != null) {
 			float progress = Mth.clamp(((DashTracker) player).getDashCooldown(), 0, 1);
@@ -82,9 +83,8 @@ public class DashClient implements ClientModInitializer {
 				Window window = Minecraft.getInstance().getWindow();
 				int x = (int) Dash.config.screenPosition().x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 				int y = (int) Dash.config.screenPosition().y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
-
-				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background
-				gui.blit(stack, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
+				gui.blit(DASH_ICONS, x, y - 8, 0, 0, 32, 32); // render the background
+				gui.blit(DASH_ICONS, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
 				stack.popPose();
 			}
 		}

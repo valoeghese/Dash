@@ -17,8 +17,8 @@ import valoeghese.dash.client.DashClient;
 
 @Mixin(LocalPlayer.class)
 public abstract class MixinLocalPlayer extends AbstractClientPlayer implements DashTracker {
-	public MixinLocalPlayer(ClientLevel clientLevel, GameProfile gameProfile, ProfilePublicKey key) {
-		super(clientLevel, gameProfile, key);
+	public MixinLocalPlayer(ClientLevel clientLevel, GameProfile gameProfile) {
+		super(clientLevel, gameProfile);
 	}
 
 	@Unique
@@ -34,7 +34,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements D
 
 	@Inject(at = @At("RETURN"), method = "aiStep")
 	private void afterAiStep(CallbackInfo ci) {
-		long ticks = this.level.getGameTime();
+		long ticks = this.level().getGameTime();
 		boolean dashKeyPressed = DashClient.consumeDash();
 
 		if (this.getDashCooldown() >= 1.0f) {
@@ -51,7 +51,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements D
 
 	@Override
 	public float getDashCooldown() {
-		long dTicks = this.level.getGameTime() - this.dash_lastClientDashTicks;
+		long dTicks = this.level().getGameTime() - this.dash_lastClientDashTicks;
 		return (float) (dTicks) / Dash.config.cooldown();
 	}
 }
