@@ -13,8 +13,8 @@ import valoeghese.dash.DashTracker;
 
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player implements DashTracker {
-	public MixinServerPlayer(Level level, BlockPos blockPos, float f, GameProfile gameProfile, ProfilePublicKey key) {
-		super(level, blockPos, f, gameProfile, key); // duck constructor
+	public MixinServerPlayer(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
+		super(level, blockPos, f, gameProfile); // duck constructor
 	}
 
 	@Unique
@@ -22,7 +22,7 @@ public abstract class MixinServerPlayer extends Player implements DashTracker {
 
 	@Override
 	public float getDashCooldown() {
-		long dTicks = this.level.getGameTime() - this.dash_lastServerDashTicks;
+		long dTicks = this.level().getGameTime() - this.dash_lastServerDashTicks;
 		return (float) (dTicks) / Dash.config.cooldown();
 	}
 

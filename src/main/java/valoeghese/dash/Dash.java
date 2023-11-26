@@ -27,7 +27,7 @@ public class Dash implements ModInitializer {
 		if (player.isSwimming()) return config.dashWhileSwimming();
 		if (player.isFallFlying()) return config.dashWhileGliding();
 
-		return player.isOnGround() || config.dashMidair();
+		return player.onGround() || config.dashMidair();
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class Dash implements ModInitializer {
 		config = DashConfig.loadOrCreate();
 
 		ServerPlayNetworking.registerGlobalReceiver(DASH_PACKET, (server, player, handler, buf, responseSender) -> {
-			long time = player.level.getGameTime();
+			long time = player.level().getGameTime();
 			DashTracker tracker = (DashTracker) player;
 			byte dir = buf.readByte();
 
