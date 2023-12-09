@@ -106,7 +106,7 @@ public class DashConfig {
 			file.createNewFile();
 
 			try (FileWriter writer = new FileWriter(file)) {
-				properties.store(writer, "Double-Tap Dash mod config. Make sure the server and client have the same settings as the cooldown is not synced.");
+				properties.store(writer, "Double-Tap Dash mod config.");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

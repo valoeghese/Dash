@@ -32,7 +32,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements D
 	 */
 	@Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;hasEnoughImpulseToStartSprinting()Z", ordinal = 0))
 	private boolean removeDoubleTapSprint(LocalPlayer self) {
-		if (Dash.config.doubleTapDash.get() && Dash.config.dashDirections[0].get()) {
+		if (Dash.activeConfig.doubleTapDash.get() && Dash.activeConfig.dashDirections[0].get()) {
 			return true;
 		} else {
 			// default behaviour
@@ -60,6 +60,6 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements D
 	@Override
 	public float getDashCooldown() {
 		long dTicks = this.level.getGameTime() - this.dash_lastClientDashTicks;
-		return (float) (dTicks) / Dash.config.cooldown.get();
+		return (float) (dTicks) / Dash.activeConfig.cooldown.get();
 	}
 }

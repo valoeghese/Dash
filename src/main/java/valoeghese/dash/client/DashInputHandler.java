@@ -33,7 +33,7 @@ public class DashInputHandler {
 	 * Measures the taps in order to detect a double tap.
 	 */
 	public void measure() {
-		if (!this.enabled || !Dash.config.doubleTapDash.get()) return; // disable if not enabled or double tapping is not enabled.
+		if (!this.enabled || !Dash.activeConfig.doubleTapDash.get()) return; // disable if not enabled or double tapping is not enabled.
 
 		boolean isDown = this.mapping.isDown();
 
@@ -53,9 +53,9 @@ public class DashInputHandler {
 	}
 
 	private boolean doubleTapped() {
-		if (!Dash.config.doubleTapDash.get()) return false; // if double tap is disabled, don't bother checking!
+		if (!Dash.activeConfig.doubleTapDash.get()) return false; // if double tap is disabled, don't bother checking!
 		long dt = this.downTimes[0] - this.downTimes[1];
-		final long maxTimeDelayMillis = Dash.config.sensitivity.get();
+		final long maxTimeDelayMillis = Dash.activeConfig.sensitivity.get();
 		return dt <= maxTimeDelayMillis && dt >= -maxTimeDelayMillis; // probably marginally faster than abs
 	}
 

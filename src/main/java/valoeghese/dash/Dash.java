@@ -22,20 +22,21 @@ public class Dash implements ModInitializer {
 	public static final int LEFT = 2;
 	public static final int RIGHT = 3;
 
-	public static DashConfig config;
+	public static DashConfig clientConfig;
+	public static DashConfig activeConfig; // may be either clientConfig or the server config
 
 	public static boolean canDash(Player player) {
-		if (player.isSwimming()) return config.dashWhileSwimming.get();
-		if (player.isFallFlying()) return config.dashWhileGliding.get();
-		if (player.isInWater()) return config.dashWhileFloating.get();
+		if (player.isSwimming()) return activeConfig.dashWhileSwimming.get();
+		if (player.isFallFlying()) return activeConfig.dashWhileGliding.get();
+		if (player.isInWater()) return activeConfig.dashWhileFloating.get();
 
-		return player.isOnGround() || config.dashMidair.get();
+		return player.isOnGround() || activeConfig.dashMidair.get();
 	}
 
 	@Override
 	public void onInitialize() {
 		LOGGER.info("*dashing noises*");
-		config = DashConfig.loadOrCreate();
+		activeConfig = clientConfig = DashConfig.loadOrCreate();
 
 		ServerPlayNetworking.registerGlobalReceiver(DASH_PACKET, (server, player, handler, buf, responseSender) -> {
 			long time = player.level.getGameTime();
@@ -46,8 +47,8 @@ public class Dash implements ModInitializer {
 				if (canDash(player) && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
 					tracker.setLastDash(time);
 
-					double str = config.strength.get();
-					double yV = config.yVelocity.get();
+					double str = activeConfig.strength.get();
+					double yV = activeConfig.yVelocity.get();
 
 					Vec3 look = player.getLookAngle().normalize().multiply(str, 0, str);
 
@@ -68,14 +69,14 @@ public class Dash implements ModInitializer {
 
 					player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), player.getDeltaMovement()));
 
-					if (config.resetAttack.get()) {
+					if (activeConfig.resetAttack.get()) {
 						player.resetAttackStrengthTicker();
 						ServerPlayNetworking.send(player, RESET_TIMER_PACKET, PacketByteBufs.create());
 					}
 
 					// apply exhaustion (affects hunger)
 					// by default this is 0 so won't have any effect
-					player.causeFoodExhaustion(config.exhaustion.get());
+					player.causeFoodExhaustion(activeConfig.exhaustion.get());
 				}
 			});
 		});
