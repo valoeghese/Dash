@@ -47,7 +47,7 @@ public class Dash implements ModInitializer {
 					double str = config.strength();
 					double yV = config.yVelocity();
 
-					Vec3 look = player.getLookAngle().multiply(str, 0, str).normalize();
+					Vec3 look = player.getLookAngle().normalize().multiply(str, 0, str);
 
 					switch (dir) {
 					case FORWARD:

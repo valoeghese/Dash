@@ -11,7 +11,8 @@ import java.util.Properties;
 
 public record DashConfig(double strength, double yVelocity, float cooldown, boolean resetAttack, long sensitivity, // V1.0 Config Options
 						 float exhaustion, boolean doubleTapDash, boolean[] dashDirections, boolean dashMidair /*Ordered by Dash constants*/, // V1.1 Config Options
-						 boolean dashWhileGliding, boolean dashWhileSwimming, ScreenPosition screenPosition // V1.2 Config Options
+						 boolean dashWhileGliding, boolean dashWhileSwimming, ScreenPosition screenPosition, // V1.2 Config Options
+						 boolean diagonalDash, boolean momentumSet, boolean dashWhileFloating // v1.3 config options
 						 ) {
 	public static DashConfig loadOrCreate() {
 		// V1.0
@@ -33,6 +34,10 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 		properties.setProperty("dash_while_swimming", "false");
 		properties.setProperty("icon_x", "8");
 		properties.setProperty("icon_y", "100%-32");
+		// v1.3
+		properties.setProperty("diagonal_dash", "true"); // any combination of enabled dash directions
+		properties.setProperty("momentum_mode", "add"); // add or set
+		properties.setProperty("dash_while_floating", "true"); // add or set
 
 		File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
 
@@ -104,7 +109,9 @@ public record DashConfig(double strength, double yVelocity, float cooldown, bool
 
 		return new DashConfig(strength, yVelocity, cooldown, resetAttack, sensitivity, // V1.0
 				exhaustion, doubleTapDash, dashDirections, dashMidair, // V1.1
-				dashWhileGliding, dashWhileSwimming, screenPosition); // V1.2
+				dashWhileGliding, dashWhileSwimming, screenPosition, // V1.2
+				true, false, true //diagonalDash, momentumSet, dashWhileFloating
+		);
 	}
 
 	private static Properties properties = new Properties();
