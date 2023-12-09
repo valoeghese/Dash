@@ -9,6 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import valoeghese.dash.config.DashConfig;
 
 public class Dash implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
@@ -24,10 +25,11 @@ public class Dash implements ModInitializer {
 	public static DashConfig config;
 
 	public static boolean canDash(Player player) {
-		if (player.isSwimming()) return config.dashWhileSwimming();
-		if (player.isFallFlying()) return config.dashWhileGliding();
+		if (player.isSwimming()) return config.dashWhileSwimming.get();
+		if (player.isFallFlying()) return config.dashWhileGliding.get();
+		if (player.isInWater()) return config.dashWhileFloating.get();
 
-		return player.isOnGround() || config.dashMidair();
+		return player.isOnGround() || config.dashMidair.get();
 	}
 
 	@Override
@@ -44,8 +46,8 @@ public class Dash implements ModInitializer {
 				if (canDash(player) && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
 					tracker.setLastDash(time);
 
-					double str = config.strength();
-					double yV = config.yVelocity();
+					double str = config.strength.get();
+					double yV = config.yVelocity.get();
 
 					Vec3 look = player.getLookAngle().normalize().multiply(str, 0, str);
 
@@ -66,14 +68,14 @@ public class Dash implements ModInitializer {
 
 					player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), player.getDeltaMovement()));
 
-					if (config.resetAttack()) {
+					if (config.resetAttack.get()) {
 						player.resetAttackStrengthTicker();
 						ServerPlayNetworking.send(player, RESET_TIMER_PACKET, PacketByteBufs.create());
 					}
 
 					// apply exhaustion (affects hunger)
 					// by default this is 0 so won't have any effect
-					player.causeFoodExhaustion(config.exhaustion());
+					player.causeFoodExhaustion(config.exhaustion.get());
 				}
 			});
 		});

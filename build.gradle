@@ -12,6 +12,8 @@ group = project.maven_group
 
 repositories {
 	maven { url = 'https://maven.parchmentmc.org' }
+	maven { url 'https://jitpack.io' }
+	maven { url 'https://maven.terraformersmc.com/' }
 }
 
 dependencies {
@@ -23,8 +25,16 @@ dependencies {
 	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+	include(modImplementation("com.github.BenzeneStudios:Sulphate:${project.sulphate_version}")) {
+		exclude module: "fabric-api"
+		exclude module: "databreaker"
+	}
+
 	// APIs
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	// Load in dev for Compat & Interacting with
+	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
 }
 
 processResources {

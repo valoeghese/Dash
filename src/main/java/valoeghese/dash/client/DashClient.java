@@ -49,10 +49,10 @@ public class DashClient implements ClientModInitializer {
 		if (FabricLoader.getInstance().isDevelopmentEnvironment()) Dash.LOGGER.info("Registering Keybind");
 
 		// If globally enabled
-		DashInputHandler.FORWARD_DASH.setEnabled(Dash.config.dashDirections()[Dash.FORWARD]);
-		DashInputHandler.BACKWARDS_DASH.setEnabled(Dash.config.dashDirections()[Dash.BACKWARDS]);
-		DashInputHandler.LEFT_DASH.setEnabled(Dash.config.dashDirections()[Dash.LEFT]);
-		DashInputHandler.RIGHT_DASH.setEnabled(Dash.config.dashDirections()[Dash.RIGHT]);
+		DashInputHandler.FORWARD_DASH.setEnabled(Dash.config.dashDirections[Dash.FORWARD].get());
+		DashInputHandler.BACKWARDS_DASH.setEnabled(Dash.config.dashDirections[Dash.BACKWARDS].get());
+		DashInputHandler.LEFT_DASH.setEnabled(Dash.config.dashDirections[Dash.LEFT].get());
+		DashInputHandler.RIGHT_DASH.setEnabled(Dash.config.dashDirections[Dash.RIGHT].get());
 
 		// register dash key
 		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
@@ -80,8 +80,10 @@ public class DashClient implements ClientModInitializer {
 				RenderSystem.setShaderTexture(0, texture.getId());
 				// render
 				Window window = Minecraft.getInstance().getWindow();
-				int x = (int) Dash.config.screenPosition().x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
-				int y = (int) Dash.config.screenPosition().y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
+				int x = (int) Dash.config.screenPosition.get()
+						.x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
+				int y = (int) Dash.config.screenPosition.get()
+						.y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 
 				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background
 				gui.blit(stack, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
