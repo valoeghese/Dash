@@ -60,6 +60,6 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements D
 	@Override
 	public float getDashCooldown() {
 		long dTicks = this.level.getGameTime() - this.dash_lastClientDashTicks;
-		return (float) (dTicks) / Dash.activeConfig.cooldown.get();
+		return (float) (dTicks) / (20*Dash.activeConfig.cooldown.get());
 	}
 }

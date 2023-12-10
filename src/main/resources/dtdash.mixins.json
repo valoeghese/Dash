@@ -7,7 +7,6 @@
     "MixinServerPlayer"
   ],
   "client": [
-    "MixinOptions",
     "MixinGui",
     "MixinKeyMapping",
     "MixinLocalPlayer",

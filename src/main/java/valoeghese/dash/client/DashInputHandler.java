@@ -61,8 +61,8 @@ public class DashInputHandler {
 		this.downTimes[1] = wayBack - 100000L;
 	}
 
-	public static final DashInputHandler FORWARD_DASH = new DashInputHandler(DashClient.options.keyUp, () -> Dash.activeConfig.forwardDash.get());
-	public static final DashInputHandler BACKWARDS_DASH = new DashInputHandler(DashClient.options.keyDown, () -> Dash.activeConfig.backwardsDash.get());
-	public static final DashInputHandler LEFT_DASH = new DashInputHandler(DashClient.options.keyLeft, () -> Dash.activeConfig.leftDash.get());
-	public static final DashInputHandler RIGHT_DASH = new DashInputHandler(DashClient.options.keyRight, () -> Dash.activeConfig.rightDash.get());
+	public static final DashInputHandler FORWARD_DASH = new DashInputHandler(Minecraft.getInstance().options.keyUp, () -> Dash.activeConfig.forwardDash.get());
+	public static final DashInputHandler BACKWARDS_DASH = new DashInputHandler(Minecraft.getInstance().options.keyDown, () -> Dash.activeConfig.backwardsDash.get());
+	public static final DashInputHandler LEFT_DASH = new DashInputHandler(Minecraft.getInstance().options.keyLeft, () -> Dash.activeConfig.leftDash.get());
+	public static final DashInputHandler RIGHT_DASH = new DashInputHandler(Minecraft.getInstance().options.keyRight, () -> Dash.activeConfig.rightDash.get());
 }

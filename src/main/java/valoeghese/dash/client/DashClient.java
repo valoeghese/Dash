@@ -38,18 +38,7 @@ public class DashClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
-		ClientPlayNetworking.registerGlobalReceiver(Dash.RESET_TIMER_PACKET, (client, handler, buf, responseSender) -> {
-			client.player.resetAttackStrengthTicker();
-		});
-	}
-
-	/**
-	 * Options stuff needs to be run here, as options are not initialised and loaded at init time.
-	 */
-	public static void onOptionsLoad(Options loadedOptions) {
-		options = loadedOptions;
-
-		if (FabricLoader.getInstance().isDevelopmentEnvironment()) Dash.LOGGER.info("Registering Keybind");
+		Dash.LOGGER.info("Initialising Double-Tap Dash Client");
 
 		// register dash key
 		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
@@ -59,7 +48,9 @@ public class DashClient implements ClientModInitializer {
 				"key.categories.movement"
 		));
 
-		options = null;
+		ClientPlayNetworking.registerGlobalReceiver(Dash.RESET_TIMER_PACKET, (client, handler, buf, responseSender) -> {
+			client.player.resetAttackStrengthTicker();
+		});
 	}
 
 	public static void renderBar(PoseStack stack, Gui gui) {

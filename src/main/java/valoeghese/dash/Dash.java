@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import valoeghese.dash.config.DashConfig;
 
+import java.util.Random;
+
 public class Dash implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
 	public static final ResourceLocation DASH_PACKET = new ResourceLocation("dtdash", "dash_action");
@@ -29,7 +31,7 @@ public class Dash implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("*dashing noises*");
+		LOGGER.info(new Random().nextDouble() < 0.001 ? "Wir flitzen in die Zukunft!" : "Dashing into the future!");
 		activeConfig = clientConfig = DashConfig.loadOrCreate();
 
 		ServerPlayNetworking.registerGlobalReceiver(DASH_PACKET, (server, player, handler, buf, responseSender) -> {
