@@ -22,6 +22,9 @@ import valoeghese.dash.Dash;
 import valoeghese.dash.DashTracker;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DashClient implements ClientModInitializer {
 	private static final ResourceLocation DASH_ICONS = new ResourceLocation("dtdash", "textures/dash_icons.png");
@@ -47,12 +50,6 @@ public class DashClient implements ClientModInitializer {
 		options = loadedOptions;
 
 		if (FabricLoader.getInstance().isDevelopmentEnvironment()) Dash.LOGGER.info("Registering Keybind");
-
-		// If globally enabled
-		DashInputHandler.FORWARD_DASH.setEnabled(Dash.activeConfig.dashDirections[Dash.FORWARD].get());
-		DashInputHandler.BACKWARDS_DASH.setEnabled(Dash.activeConfig.dashDirections[Dash.BACKWARDS].get());
-		DashInputHandler.LEFT_DASH.setEnabled(Dash.activeConfig.dashDirections[Dash.LEFT].get());
-		DashInputHandler.RIGHT_DASH.setEnabled(Dash.activeConfig.dashDirections[Dash.RIGHT].get());
 
 		// register dash key
 		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
@@ -98,38 +95,80 @@ public class DashClient implements ClientModInitializer {
 
 	// This code could be much better beautified by extracting commonalities but it's not gonna change any time soon and it's 1am
 	public static boolean tryDash(boolean dashKeyPressed) {
-		boolean attempted = false;
+		Set<Dash.DashDirection> attempted = new HashSet<>();
 
 		if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed)) {
 			DashInputHandler.FORWARD_DASH.reset();
-			sendDash(Dash.FORWARD);
-			attempted = true;
+			attempted.add(Dash.DashDirection.FORWARD);
 		}
 
 		if (DashInputHandler.BACKWARDS_DASH.shouldDash(dashKeyPressed)) {
 			DashInputHandler.BACKWARDS_DASH.reset();
-			sendDash(Dash.BACKWARDS);
-			attempted = true;
+			attempted.add(Dash.DashDirection.BACKWARD);
 		}
 
 		if (DashInputHandler.LEFT_DASH.shouldDash(dashKeyPressed)) {
 			DashInputHandler.LEFT_DASH.reset();
-			sendDash(Dash.LEFT);
-			attempted = true;
+			attempted.add(Dash.DashDirection.LEFT);
 		}
 
 		if (DashInputHandler.RIGHT_DASH.shouldDash(dashKeyPressed)) {
 			DashInputHandler.RIGHT_DASH.reset();
-			sendDash(Dash.RIGHT);
-			attempted = true;
+			attempted.add(Dash.DashDirection.RIGHT);
 		}
 
-		return attempted;
+		// remove mirrors (cancel out)
+		if (attempted.contains(Dash.DashDirection.FORWARD) && attempted.contains(Dash.DashDirection.BACKWARD)) {
+			attempted.remove(Dash.DashDirection.FORWARD);
+			attempted.remove(Dash.DashDirection.BACKWARD);
+		}
+
+		if (attempted.contains(Dash.DashDirection.LEFT) && attempted.contains(Dash.DashDirection.RIGHT)) {
+			attempted.remove(Dash.DashDirection.LEFT);
+			attempted.remove(Dash.DashDirection.RIGHT);
+		}
+
+		// now resolve the actual dash direction. either one or two directions in attempted at this point.
+		// And if two, will be one F-B and one L-R
+		Dash.DashDirection finalDirection = null;
+
+		if (attempted.size() == 2) {
+			if (Dash.activeConfig.diagonalDash.get()) {
+				// compute the diagonal dash
+				if (attempted.contains(Dash.DashDirection.FORWARD)) {
+					if (attempted.contains(Dash.DashDirection.LEFT)) {
+						finalDirection = Dash.DashDirection.FORWARD_LEFT;
+					} else {
+						finalDirection = Dash.DashDirection.FORWARD_RIGHT;
+					}
+				} else { // must be backwards
+					if (attempted.contains(Dash.DashDirection.LEFT)) {
+						finalDirection = Dash.DashDirection.BACKWARD_LEFT;
+					} else {
+						finalDirection = Dash.DashDirection.BACKWARD_RIGHT;
+					}
+				}
+			} else {
+				// pick the forward/backward direction
+				finalDirection = attempted.contains(Dash.DashDirection.FORWARD) ? Dash.DashDirection.FORWARD : Dash.DashDirection.BACKWARD;
+			}
+		} else if (attempted.size() == 1) {
+			finalDirection = attempted.iterator().next();
+		}
+
+		// try move in that direction
+		if (finalDirection != null) {
+			sendDash(finalDirection);
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
-	private static void sendDash(int direction) {
+	private static void sendDash(Dash.DashDirection direction) {
 		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeByte(direction);
+		buf.writeByte(direction.ordinal());
 		ClientPlayNetworking.send(Dash.DASH_PACKET, buf);
 	}
 }

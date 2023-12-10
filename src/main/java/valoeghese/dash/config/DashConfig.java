@@ -34,19 +34,10 @@ public class DashConfig {
 	// What kinds of dash / trigger
 	public final BooleanOption doubleTapDash = new BooleanOption(this.options, "double_tap_dash", true);
 
-	/**
-	 * Ordered by Dash constants.
-	 * 0 - forwards
-	 * 1 - backwards
-	 * 2 - left
-	 * 3 - right
-	 */
-	public final BooleanOption[] dashDirections = new BooleanOption[] {
-			new BooleanOption(this.options, "forward_dash", true),
-			new BooleanOption(this.options, "backwards_dash", true),
-			new BooleanOption(this.options, "left_dash", true),
-			new BooleanOption(this.options, "right_dash", true)
-	};
+	public final BooleanOption forwardDash = new BooleanOption(this.options, "forward_dash", true);
+	public final BooleanOption backwardsDash = new BooleanOption(this.options, "backwards_dash", true);
+	public final BooleanOption leftDash = new BooleanOption(this.options, "left_dash", true);
+	public final BooleanOption rightDash = new BooleanOption(this.options, "right_dash", true);
 
 	/**
 	 * Allow any combination of enabled dash directions

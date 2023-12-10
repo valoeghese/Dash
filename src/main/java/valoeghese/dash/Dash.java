@@ -44,44 +44,37 @@ public class Dash implements ModInitializer {
 					// if diagonal try restore to a legal single if possible - May not implement cause client's problem
 					// anyway. likely trying to cheat if this happens (or sync fail)
 
-					double str = activeConfig.strength.get();
-					double yV = activeConfig.yVelocity.get();
-
 					Vec3 look = player.getLookAngle().normalize();
-					Vec3m move = new Vec3m(0, 0, 0);
+					Vec3m horizontalDirectionVector = new Vec3m(0, 0, 0);
 					DashDirection direction = DashDirection.values()[dir];
 
+					// add directions
 					if (direction.isForward()) {
-
+						horizontalDirectionVector.add(look.x, 0, look.z);
 					}
 
 					if (direction.isBackwards()) {
-
+						horizontalDirectionVector.add(-look.x, 0, -look.z);
 					}
 
 					if (direction.isLeft()) {
-
+						horizontalDirectionVector.add(look.z, 0, -look.x);
 					}
 
 					if (direction.isRight()) {
-
+						horizontalDirectionVector.add(-look.z, 0, look.x);
 					}
-//					switch (dir) {
-//					case FORWARD:
-//						player.push(look.x, yV, look.z);
-//						break;
-//					case BACKWARDS:
-//						player.push(-look.x, yV, -look.z);
-//						break;
-//					case LEFT:
-//						player.push(look.z, yV, -look.x);
-//						break;
-//					case RIGHT:
-//						player.push(-look.z, yV, look.x);
-//						break;
-//					}
 
-					player.push(move.x, move.y, move.z);
+					// normalise and apply strength, then add y velocity
+					Vec3 move = horizontalDirectionVector.ofLength(activeConfig.strength.get())
+							.add(0, activeConfig.yVelocity.get(), 0);
+
+					// move the player in that direction
+					if (activeConfig.momentumMode.get() == MomentumMode.SET) {
+						player.setDeltaMovement(move.x, move.y, move.z);
+					} else {
+						player.push(move.x, move.y, move.z);
+					}
 
 					player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), player.getDeltaMovement()));
 

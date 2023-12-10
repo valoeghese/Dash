@@ -32,7 +32,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements D
 	 */
 	@Redirect(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;hasEnoughImpulseToStartSprinting()Z", ordinal = 0))
 	private boolean removeDoubleTapSprint(LocalPlayer self) {
-		if (Dash.activeConfig.doubleTapDash.get() && Dash.activeConfig.dashDirections[0].get()) {
+		if (Dash.activeConfig.doubleTapDash.get() && Dash.activeConfig.forwardDash.get()) {
 			return true;
 		} else {
 			// default behaviour

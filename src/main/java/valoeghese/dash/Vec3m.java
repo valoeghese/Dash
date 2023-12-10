@@ -28,4 +28,8 @@ public class Vec3m {
 		this.y += y;
 		this.z += z;
 	}
+
+	Vec3 ofLength(double length) {
+		return new Vec3(this.x, this.y, this.z).normalize().multiply(length, length, length);
+	}
 }
