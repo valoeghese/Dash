@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Properties;
 
 public class DashConfig {
@@ -51,7 +50,7 @@ public class DashConfig {
 	public final BooleanOption dashWhileFloating = new BooleanOption(this.options, "dash_while_floating", false);
 
 	// GUI
-	public final ScreenPositionOption screenPosition = new ScreenPositionOption(
+	public final ScreenPositionOption iconPosition = new ScreenPositionOption(
 			this.options,
 			"icon",
 			new ScreenPosition(0, 0, 8, 0, 1, -32)

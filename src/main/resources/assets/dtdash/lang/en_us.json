@@ -1,3 +1,32 @@
 {
-  "key.dtdash.dash": "Dash"
+  "key.dtdash.dash": "Dash",
+
+  "options.dtdash.strength": "Strength",
+  "options.dtdash.y_velocity": "Y Velocity",
+  "options.dtdash.momentum_mode": "Momentum Mode: %s",
+
+  "options.dtdash.cooldown": "Cooldown",
+  "options.dtdash.reset_attack": "Reset Attack: %s",
+  "options.dtdash.sensitivity": "Sensitivity",
+  "options.dtdash.exhaustion": "Exhaustion",
+
+  "options.dtdash.double_tap_dash": "Double Tap Dash: %s",
+  "options.dtdash.forward_dash": "Forward Dash: %s",
+  "options.dtdash.backwards_dash": "Backward Dash: %s",
+  "options.dtdash.left_dash": "Left Dash: %s",
+  "options.dtdash.right_dash": "Right Dash: %s",
+  "options.dtdash.diagonal_dash": "Diagonal Dash: %s",
+
+  "options.dtdash.dash_midair": "Dash Midair: %s",
+  "options.dtdash.dash_while_gliding": "Dash While Gliding: %s",
+  "options.dtdash.dash_while_swimming": "Dash While Swimming: %s",
+  "options.dtdash.dash_while_floating": "Dash While Floating: %s",
+
+  "options.dtdash.icon_position": "Icon Position",
+
+  "screen.dtdash.config": "Dash Config",
+  "screen.dtdash.contexts": "Dash Contexts",
+  "screen.dtdash.directions": "Dash Directions",
+  "screen.dtdash.momentum": "Momentum",
+  "screen.dtdash.miscellaneous": "Miscellaneous"
 }

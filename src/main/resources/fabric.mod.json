@@ -23,6 +23,9 @@
     ],
     "client": [
       "valoeghese.dash.client.DashClient"
+    ],
+    "modmenu": [
+      "valoeghese.dash.client.ModMenuDashConfig"
     ]
   },
   "mixins": [

@@ -8,7 +8,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
@@ -22,7 +21,6 @@ import valoeghese.dash.Dash;
 import valoeghese.dash.DashTracker;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -68,9 +66,9 @@ public class DashClient implements ClientModInitializer {
 				RenderSystem.setShaderTexture(0, texture.getId());
 				// render
 				Window window = Minecraft.getInstance().getWindow();
-				int x = (int) Dash.activeConfig.screenPosition.get()
+				int x = (int) Dash.activeConfig.iconPosition.get()
 						.x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
-				int y = (int) Dash.activeConfig.screenPosition.get()
+				int y = (int) Dash.activeConfig.iconPosition.get()
 						.y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 
 				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background
