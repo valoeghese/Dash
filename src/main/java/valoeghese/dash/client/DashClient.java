@@ -6,12 +6,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +21,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import valoeghese.dash.Dash;
 import valoeghese.dash.DashTracker;
+import valoeghese.dash.config.DashConfig;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -37,6 +40,20 @@ public class DashClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		Dash.LOGGER.info("Initialising Double-Tap Dash Client");
+
+		// Synchronise Settings on Join
+		// Restore Settings on Leave
+
+		ClientPlayConnectionEvents.DISCONNECT.register(new ClientPlayConnectionEvents.Disconnect() {
+			@Override
+			public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
+				// in case was using server config, ensure active config is reset to the client's config.
+				if (Dash.activeConfig != Dash.clientConfig) {
+					Dash.LOGGER.info("Server Disconnect: Switching to Client Config");
+					Dash.activeConfig = Dash.clientConfig;
+				}
+			}
+		});
 
 		// register dash key
 		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
@@ -66,9 +83,9 @@ public class DashClient implements ClientModInitializer {
 				RenderSystem.setShaderTexture(0, texture.getId());
 				// render
 				Window window = Minecraft.getInstance().getWindow();
-				int x = (int) Dash.activeConfig.iconPosition.get()
+				int x = (int) Dash.clientConfig.iconPosition.get()
 						.x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
-				int y = (int) Dash.activeConfig.iconPosition.get()
+				int y = (int) Dash.clientConfig.iconPosition.get()
 						.y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 
 				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background

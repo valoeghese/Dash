@@ -51,7 +51,7 @@ public class DashInputHandler {
 	private boolean doubleTapped() {
 		if (!Dash.activeConfig.doubleTapDash.get()) return false; // if double tap is disabled, don't bother checking!
 		long dt = this.downTimes[0] - this.downTimes[1];
-		final long maxTimeDelayMillis = Dash.activeConfig.sensitivity.get();
+		final long maxTimeDelayMillis = Dash.clientConfig.sensitivity.get();
 		return dt <= maxTimeDelayMillis && dt >= -maxTimeDelayMillis; // probably marginally faster than abs
 	}
 
