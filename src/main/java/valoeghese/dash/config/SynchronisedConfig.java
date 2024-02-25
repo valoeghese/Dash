@@ -16,7 +16,8 @@ public class SynchronisedConfig {
 	// Dash itself
 	public final DoubleOption strength = new DoubleOption(this.options, "strength", 1.3);
 	public final DoubleOption yVelocity = new DoubleOption(this.options, "y_velocity", 0.4);
-	public final EnumOption<MomentumMode> momentumMode = new EnumOption<>(this.options, "momentum_mode", MomentumMode.ADD, MomentumMode::parse);
+	public final EnumOption<MomentumMode> momentumMode = new EnumOption<>(this.options, "momentum_mode",
+			MomentumMode.ADD, MomentumMode.values(), MomentumMode::parse);
 
 	// Meta-properties of the dash
 	public final FloatOption cooldown = new FloatOption(this.options, "cooldown", 1.0f);

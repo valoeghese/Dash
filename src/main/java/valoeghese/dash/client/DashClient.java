@@ -88,7 +88,7 @@ public class DashClient implements ClientModInitializer {
 			} catch (Exception e) {
 				handler.getConnection().disconnect(new TranslatableComponent("dtdash.err.sync_parse", e.toString()));
 			}
-		})
+		});
 	}
 
 	public static void renderBar(PoseStack stack, Gui gui) {

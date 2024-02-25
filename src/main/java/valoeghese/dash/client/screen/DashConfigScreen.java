@@ -15,6 +15,8 @@ public class DashConfigScreen extends SulphateScreen {
 
 	@Override
 	protected void addWidgets() {
+		// show the values actively being used
+		// thus for server-controlled options, show activeConfig
 		this.addSubMenu(new TranslatableComponent("screen.dtdash.momentum"), ImmutableList.of(
 				Dash.activeConfig.strength,
 				Dash.activeConfig.yVelocity,

@@ -14,7 +14,7 @@ public abstract class Option<T> {
 		options.add(this);
 	}
 
-	protected final String name;
+	public final String name;
 	protected T value;
 
 	public T get() {
@@ -38,7 +38,7 @@ public abstract class Option<T> {
 		properties.setProperty(this.name, String.valueOf(this.value));
 	}
 
-	public Component getComponent() {
-		return new TranslatableComponent("options.dtdash." + this.name);
+	public Component getComponent(Object... parameters) {
+		return new TranslatableComponent("options.dtdash." + this.name, parameters);
 	}
 }

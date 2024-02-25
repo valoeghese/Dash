@@ -2,6 +2,9 @@
   "dtdash.err.sync": "Could not synchronise Double-Tap Dash config: %s",
   "dtdash.err.sync_parse": "Could not read Double-Tap Dash config sent by server: %s",
 
+  "dtdash.momentum_mode.add": "Add",
+  "dtdash.momentum_mode.set": "Set",
+
   "key.dtdash.dash": "Dash",
 
   "options.dtdash.strength": "Strength",
@@ -9,7 +12,7 @@
   "options.dtdash.momentum_mode": "Momentum Mode: %s",
 
   "options.dtdash.cooldown": "Cooldown",
-  "options.dtdash.reset_attack": "Reset Attack: %s",
+  "options.dtdash.resets_attack": "Reset Attack: %s",
   "options.dtdash.sensitivity": "Sensitivity",
   "options.dtdash.exhaustion": "Exhaustion",
 
@@ -29,6 +32,7 @@
 
   "screen.dtdash.client": "Client-Side",
   "screen.dtdash.config": "Dash Config",
+  "screen.dtdash.config.disabled": "This config option is currently being controlled by the server.",
   "screen.dtdash.contexts": "Dash Contexts",
   "screen.dtdash.directions": "Dash Directions",
   "screen.dtdash.momentum": "Momentum",
