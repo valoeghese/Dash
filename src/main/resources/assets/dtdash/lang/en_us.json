@@ -1,4 +1,7 @@
 {
+  "dtdash.err.sync": "Could not synchronise Double-Tap Dash config: %s",
+  "dtdash.err.sync_parse": "Could not read Double-Tap Dash config sent by server: %s",
+
   "key.dtdash.dash": "Dash",
 
   "options.dtdash.strength": "Strength",

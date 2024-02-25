@@ -16,15 +16,19 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import valoeghese.dash.Dash;
 import valoeghese.dash.DashTracker;
 import valoeghese.dash.config.DashConfig;
+import valoeghese.dash.config.SynchronisedConfig;
 
 import javax.annotation.Nullable;
+import java.io.ByteArrayInputStream;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 public class DashClient implements ClientModInitializer {
@@ -48,9 +52,9 @@ public class DashClient implements ClientModInitializer {
 			@Override
 			public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
 				// in case was using server config, ensure active config is reset to the client's config.
-				if (Dash.activeConfig != Dash.clientConfig) {
-					Dash.LOGGER.info("Server Disconnect: Switching to Client Config");
-					Dash.activeConfig = Dash.clientConfig;
+				if (Dash.activeConfig != Dash.localConfig) {
+					Dash.LOGGER.info("Disconnected from server: Switching to Client's local Config");
+					Dash.activeConfig = Dash.localConfig;
 				}
 			}
 		});
@@ -66,6 +70,25 @@ public class DashClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(Dash.RESET_TIMER_PACKET, (client, handler, buf, responseSender) -> {
 			client.player.resetAttackStrengthTicker();
 		});
+
+		ClientPlayNetworking.registerGlobalReceiver(Dash.SYNC_CONFIG_PACKET, (client, handler, buf, responseSender) -> {
+			try {
+				byte[] bytes = buf.readByteArray();
+				Properties properties = new Properties();
+
+				try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
+					properties.load(stream);
+				}
+
+				SynchronisedConfig config = new SynchronisedConfig();
+				config.read(properties);
+
+				Dash.activeConfig = config;
+				Dash.LOGGER.info("Successfully synchronised config.");
+			} catch (Exception e) {
+				handler.getConnection().disconnect(new TranslatableComponent("dtdash.err.sync_parse", e.toString()));
+			}
+		})
 	}
 
 	public static void renderBar(PoseStack stack, Gui gui) {
@@ -83,9 +106,9 @@ public class DashClient implements ClientModInitializer {
 				RenderSystem.setShaderTexture(0, texture.getId());
 				// render
 				Window window = Minecraft.getInstance().getWindow();
-				int x = (int) Dash.clientConfig.iconPosition.get()
+				int x = (int) Dash.localConfig.iconPosition.get()
 						.x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
-				int y = (int) Dash.clientConfig.iconPosition.get()
+				int y = (int) Dash.localConfig.iconPosition.get()
 						.y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 
 				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background

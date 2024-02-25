@@ -1,14 +1,12 @@
 package valoeghese.dash;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.server.IntegratedServer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -20,6 +18,9 @@ import org.slf4j.LoggerFactory;
 import valoeghese.dash.config.DashConfig;
 import valoeghese.dash.config.SynchronisedConfig;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 import java.util.Random;
 
 public class Dash implements ModInitializer {
@@ -30,9 +31,10 @@ public class Dash implements ModInitializer {
 
 	// S2C
 	public static final ResourceLocation RESET_TIMER_PACKET = new ResourceLocation("dtdash", "update_timer");
+	public static final ResourceLocation SYNC_CONFIG_PACKET = new ResourceLocation("dtdash", "sync");
 
-	public static DashConfig clientConfig;
-	public static SynchronisedConfig activeConfig; // may be either clientConfig or the server config
+	public static DashConfig localConfig;
+	public static SynchronisedConfig activeConfig; // may be either localConfig or the server config
 
 	public static boolean canDash(Player player) {
 		if (player.isSwimming()) return activeConfig.dashWhileSwimming.get();
@@ -45,19 +47,30 @@ public class Dash implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info(new Random().nextDouble() < 0.001 ? "Wir flitzen in die Zukunft!" : "Dashing into the future!");
-		activeConfig = clientConfig = DashConfig.loadOrCreate();
+		activeConfig = localConfig = DashConfig.loadOrCreate(); // TODO on dedicated server don't write client-only options
 
 		ServerPlayConnectionEvents.INIT.register(new ServerPlayConnectionEvents.Init() {
 			@Override
 			public void onPlayInit(ServerGamePacketListenerImpl handler, MinecraftServer server) {
 				LOGGER.info("Connection Established");
 
-				// don't sync if connecting to local server
-				// local player (Minecraft#player) doesn't exist yet.
-				// this doesn't work in cracked (like dev). need to find a better way.
-				if (!server.isDedicatedServer() &&
-						Minecraft.getInstance().getUser().getUuid().equals(handler.player.getUUID().toString().replace("-", ""))) {
-					LOGGER.info("Connecting to Local Integrated Server. No sync necessary.");
+				// sync even if connecting to local server
+				// This informs the client that they cannot change settings. Perhaps in the future we can reverse this
+				// restriction if we implement it that the settings can be changed once in game.
+
+				// serialise settings
+				Properties properties = new Properties();
+				localConfig.save(properties);
+
+				try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+					properties.store(bos, "Double-Tap Dash Config");
+
+					// create buf
+					FriendlyByteBuf buf = PacketByteBufs.create();
+					buf.writeByteArray(bos.toByteArray());
+					ServerPlayNetworking.send(handler.player, SYNC_CONFIG_PACKET, buf);
+				} catch (IOException e) {
+					handler.disconnect(new TranslatableComponent("dtdash.err.sync", e.toString()));
 				}
 			}
 		});

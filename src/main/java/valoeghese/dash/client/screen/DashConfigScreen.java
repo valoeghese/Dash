@@ -8,8 +8,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import valoeghese.dash.Dash;
 import valoeghese.dash.config.Option;
 
-import java.util.function.Supplier;
-
 public class DashConfigScreen extends SulphateScreen {
 	public DashConfigScreen(Screen parent) {
 		super(new TranslatableComponent("screen.dtdash.config"), parent);
@@ -40,8 +38,8 @@ public class DashConfigScreen extends SulphateScreen {
 		), false);
 
 		this.addSubMenu(new TranslatableComponent("screen.dtdash.client"), ImmutableList.of(
-				Dash.clientConfig.sensitivity,
-				Dash.clientConfig.iconPosition
+				Dash.localConfig.sensitivity,
+				Dash.localConfig.iconPosition
 		), true);
 
 		this.addSubMenu(new TranslatableComponent("screen.dtdash.miscellaneous"), ImmutableList.of(
@@ -55,7 +53,7 @@ public class DashConfigScreen extends SulphateScreen {
 
 	private void addSubMenu(Component name, ImmutableList<Option<?>> options, boolean client) {
 		this.addButton(name, bn -> this.minecraft.setScreen(
-				new DashConfigSubScreen(title, this, options, client || Dash.activeConfig == Dash.clientConfig)
+				new DashConfigSubScreen(title, this, options, client || Dash.activeConfig == Dash.localConfig)
 		));
 	}
 }
