@@ -33,6 +33,7 @@
   "screen.dtdash.client": "Client-Side",
   "screen.dtdash.config": "Dash Config",
   "screen.dtdash.config.disabled": "This config option is currently being controlled by the server.",
+  "screen.dtdash.config.invalidOptions": "Options have invalid values: %s",
   "screen.dtdash.contexts": "Dash Contexts",
   "screen.dtdash.directions": "Dash Directions",
   "screen.dtdash.momentum": "Momentum",

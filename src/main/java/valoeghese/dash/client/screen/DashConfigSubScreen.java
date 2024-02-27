@@ -4,6 +4,7 @@ import benzenestudios.sulphate.SulphateScreen;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -13,9 +14,7 @@ import valoeghese.dash.config.*;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -32,6 +31,9 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 	private final List<Option<?>> options;
 	private final boolean unlocked;
+	private boolean settingsModified = false;
+	private AbstractButton done = null;
+	private final Set<String> invalid = new HashSet<>();
 
 	private final Button.OnTooltip disabledTooltip = new Button.OnTooltip() {
 		@Override
@@ -60,6 +62,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 						option.getComponent(opt.get() ? OPTION_ON : OPTION_OFF),
 						button -> {
 							opt.set(!opt.get());
+							this.settingsModified = true;
 							button.setMessage(option.getComponent(opt.get() ? OPTION_ON : OPTION_OFF));
 						},
 						this.unlocked ? Button.NO_TOOLTIP : this.disabledTooltip);
@@ -71,37 +74,79 @@ public class DashConfigSubScreen extends SulphateScreen {
 						button -> {
 							int index = (opt.get().ordinal() + 1) % opt.getValues().length;
 							((Option<Object>) opt).set(opt.getValues()[index]);
+							this.settingsModified = true;
 							button.setMessage(option.getComponent(new TranslatableComponent("dtdash." + opt.name + "." + opt.get().toString().toLowerCase(Locale.ROOT))));
 						},
 						this.unlocked ? Button.NO_TOOLTIP : this.disabledTooltip);
 
 				bn.active = this.unlocked;
-			} else if (option instanceof DoubleOption || option instanceof FloatOption) {
+			} else if (option instanceof NumericalOption<?> opt) {
+				NumberEditBox edit = this.addWidget(NumberEditBox::new, option.getComponent());
+				edit.setMaxLength(128);
+				edit.setValue(String.valueOf(opt.getAsDouble()));
+				edit.setResponder((string) -> {
+					try {
+						opt.setFromDouble(edit.getDoubleValue());
+						this.invalid.remove(option.name);
+					} catch (NumberFormatException e) {
+						this.invalid.add(option.name);
+					}
 
-			} else if (option instanceof TimeOption) {
-
+					this.done.active = this.invalid.isEmpty();
+				});
 			} else if (option instanceof ScreenPositionOption) {
 				// don't handle this yet
 			} else {
 				throw new RuntimeException("Unknown option type " + option.getClass().getSimpleName());
 			}
 		}
+
+		this.done = this.addDone((x, y, width, height, text, onPress, onTooltip) -> new Button(
+				x, y, width, height, text, onPress, new Button.OnTooltip() {
+			@Override
+			public void onTooltip(Button button, PoseStack poseStack, int i, int j) {
+				if (!DashConfigSubScreen.this.done.active) {
+					Screen screen = DashConfigSubScreen.this;
+					Component text = new TranslatableComponent("screen.dtdash.config.invalidOptions",
+							String.join(" ", DashConfigSubScreen.this.invalid));
+
+					screen.renderTooltip(poseStack, Minecraft.getInstance().font.split(
+							text,
+							Math.max(screen.width / 2 - 43, 170)
+					), i, j + 18);
+				}
+			}
+
+			@Override
+			public void narrateTooltip(Consumer<Component> consumer) {
+				if (!DashConfigSubScreen.this.done.active) {
+					Component text = new TranslatableComponent("screen.dtdash.config.invalidOptions",
+							String.join(" ", DashConfigSubScreen.this.invalid));
+
+					consumer.accept(text);
+				}
+			}
+		}
+		));
 	}
 
 	@Override
 	public void onClose() {
 		// Save config if settings changed
-		// the only config that can be modified in the settings is the one stored in localConfig so save that
-		CONFIG_SAVE.execute(() -> {
-			Properties properties = new Properties();
-			Dash.localConfig.save(properties);
 
-			try (FileWriter writer = new FileWriter(DashConfig.FILE)) {
-				properties.store(writer, "Double-Tap Dash mod config.");
-			} catch (IOException e) {
-				Dash.LOGGER.error("Failed to save dash config!", e);
-			}
-		});
+		if (this.settingsModified) {
+			// the only config that can be modified in the settings is the one stored in localConfig so save that
+			CONFIG_SAVE.execute(() -> {
+				Properties properties = new Properties();
+				Dash.localConfig.save(properties);
+
+				try (FileWriter writer = new FileWriter(DashConfig.FILE)) {
+					properties.store(writer, "Double-Tap Dash mod config.");
+				} catch (IOException e) {
+					Dash.LOGGER.error("Failed to save dash config!", e);
+				}
+			});
+		}
 
 		// set screen to parent
 		super.onClose();

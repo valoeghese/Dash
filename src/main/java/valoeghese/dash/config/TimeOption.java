@@ -3,7 +3,7 @@ package valoeghese.dash.config;
 import java.util.Collection;
 import java.util.Properties;
 
-public class TimeOption extends Option<Long> {
+public class TimeOption extends NumericalOption<Long> {
 	public TimeOption(Collection<Option<?>> options, String name, double defaultValueSeconds) {
 		super(options, name, toMillis(defaultValueSeconds));
 	}
@@ -20,6 +20,16 @@ public class TimeOption extends Option<Long> {
 	@Override
 	public void serialise(Properties properties) {
 		properties.setProperty(this.name, String.valueOf(fromMillis(this.value)));
+	}
+
+	@Override
+	public void setFromDouble(double value) {
+		this.set(toMillis(value));
+	}
+
+	@Override
+	public double getAsDouble() {
+		return fromMillis(this.get());
 	}
 
 	private static long toMillis(double seconds) {
