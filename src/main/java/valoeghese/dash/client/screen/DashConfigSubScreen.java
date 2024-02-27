@@ -7,12 +7,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import valoeghese.dash.Dash;
 import valoeghese.dash.config.*;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import static net.minecraft.network.chat.CommonComponents.OPTION_OFF;
@@ -86,9 +91,21 @@ public class DashConfigSubScreen extends SulphateScreen {
 	@Override
 	public void onClose() {
 		// Save config if settings changed
-		// TODO
+		// the only config that can be modified in the settings is the one stored in localConfig so save that
+		CONFIG_SAVE.execute(() -> {
+			Properties properties = new Properties();
+			Dash.localConfig.save(properties);
+
+			try (FileWriter writer = new FileWriter(DashConfig.FILE)) {
+				properties.store(writer, "Double-Tap Dash mod config.");
+			} catch (IOException e) {
+				Dash.LOGGER.error("Failed to save dash config!", e);
+			}
+		});
 
 		// set screen to parent
 		super.onClose();
 	}
+
+	private static final Executor CONFIG_SAVE = Executors.newSingleThreadExecutor();
 }

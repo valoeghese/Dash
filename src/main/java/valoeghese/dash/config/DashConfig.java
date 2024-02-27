@@ -1,16 +1,12 @@
 package valoeghese.dash.config;
 
 import net.fabricmc.loader.api.FabricLoader;
-import valoeghese.dash.Dash;
-import valoeghese.dash.MomentumMode;
 import valoeghese.dash.ScreenPosition;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Properties;
 
 public class DashConfig extends SynchronisedConfig {
@@ -26,6 +22,8 @@ public class DashConfig extends SynchronisedConfig {
 			new ScreenPosition(0, 0, 8, 0, 1, -32)
 	);
 
+	public static final File FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
+
 	public static DashConfig loadOrCreate() {
 		Properties properties = new Properties();
 		DashConfig config = new DashConfig();
@@ -33,7 +31,7 @@ public class DashConfig extends SynchronisedConfig {
 		// add defaults (these will be overridden by anything read in)
 		config.save(properties);
 
-		File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
+		File file = FILE;
 
 		try {
 			if (file.isFile()) {
