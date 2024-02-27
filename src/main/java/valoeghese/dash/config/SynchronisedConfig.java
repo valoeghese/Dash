@@ -3,14 +3,13 @@ package valoeghese.dash.config;
 import valoeghese.dash.Dash;
 import valoeghese.dash.MomentumMode;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Contains everything that is synchronised between the client and server configs.
  */
 public class SynchronisedConfig {
+	protected final Collection<Option<?>> clientOptions = new ArrayList<>(); // client-side only options
 	protected final Collection<Option<?>> options = new ArrayList<>();
 
 	// Dash itself
@@ -43,8 +42,16 @@ public class SynchronisedConfig {
 	public final BooleanOption dashWhileSwimming = new BooleanOption(this.options, "dash_while_swimming", false);
 	public final BooleanOption dashWhileFloating = new BooleanOption(this.options, "dash_while_floating", false);
 
-	public void read(Properties properties) {
-		for (Option<?> option : this.options) {
+	public void read(Properties properties, boolean client) {
+		this.read(properties, this.options);
+
+		if (client) {
+			this.read(properties, this.clientOptions);
+		}
+	}
+
+	private void read(Properties properties, Collection<Option<?>> options) {
+		for (Option<?> option : options) {
 			try {
 				option.deserialise(properties);
 			} catch (IllegalArgumentException e) {
@@ -53,9 +60,15 @@ public class SynchronisedConfig {
 		}
 	}
 
-	public void save(Properties properties) {
+	public void save(Properties properties, boolean client) {
 		for (Option<?> option : this.options) {
 			option.serialise(properties);
+		}
+
+		if (client) {
+			for (Option<?> option : this.clientOptions) {
+				option.serialise(properties);
+			}
 		}
 	}
 }

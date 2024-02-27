@@ -1,5 +1,7 @@
 package valoeghese.dash;
 
+import valoeghese.dash.config.Option;
+
 import java.util.Locale;
 import java.util.Optional;
 
@@ -74,7 +76,10 @@ public record ScreenPosition(float percentageXX, float percentageXY, float pixel
 	public static ScreenPosition parse(String x, String y) {
 		float[] xParts = decompose(x, false);
 		float[] yParts = decompose(y, true);
-		return new ScreenPosition(xParts[0], xParts[1], xParts[2], yParts[0], yParts[1], yParts[2]);
+		return new ScreenPosition(
+				xParts[0], xParts[1], xParts[2],
+				yParts[0], yParts[1], yParts[2],
+				Optional.of(x), Optional.of(y));
 	}
 
 	private static float[] decompose(String axisPosition, boolean isYAxis) {

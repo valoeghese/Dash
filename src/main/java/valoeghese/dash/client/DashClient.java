@@ -81,7 +81,7 @@ public class DashClient implements ClientModInitializer {
 				}
 
 				SynchronisedConfig config = new SynchronisedConfig();
-				config.read(properties);
+				config.read(properties, false); // client-side options cannot be controlled by server.
 
 				Dash.activeConfig = config;
 				Dash.LOGGER.info("Successfully synchronised config.");

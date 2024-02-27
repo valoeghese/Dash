@@ -1,15 +1,18 @@
 package valoeghese.dash.client.screen;
 
 import benzenestudios.sulphate.SulphateScreen;
+import benzenestudios.sulphate.WidgetConstructor;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import valoeghese.dash.Dash;
+import valoeghese.dash.ScreenPosition;
 import valoeghese.dash.config.*;
 
 import java.io.FileWriter;
@@ -18,6 +21,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static net.minecraft.network.chat.CommonComponents.OPTION_OFF;
 import static net.minecraft.network.chat.CommonComponents.OPTION_ON;
@@ -81,6 +85,9 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 				bn.active = this.unlocked;
 			} else if (option instanceof NumericalOption<?> opt) {
+				Label label = this.addWidget(Label::new, option.getComponent());
+				label.colour = 0xAAAAAA;
+
 				NumberEditBox edit = this.addWidget(NumberEditBox::new, option.getComponent());
 				edit.setMaxLength(128);
 				edit.setValue(String.valueOf(opt.getAsDouble()));
@@ -89,14 +96,60 @@ public class DashConfigSubScreen extends SulphateScreen {
 						opt.setFromDouble(edit.getDoubleValue());
 						this.invalid.remove(option.name);
 						this.settingsModified = true;
-					} catch (NumberFormatException e) {
+					} catch (IllegalArgumentException e) {
 						this.invalid.add(option.name);
 					}
 
 					this.done.active = this.invalid.isEmpty();
 				});
-			} else if (option instanceof ScreenPositionOption) {
-				// don't handle this yet
+			} else if (option instanceof ScreenPositionOption opt) {
+				WidgetConstructor<EditBox> editBoxMaker = (x, y, width, height, component) -> new EditBox(
+						this.font, x, y, width, height, component
+				);
+
+				// Edit X value -- when setting, use existing Y value
+				Label label = this.addWidget(Label::new, option.getComponent("X"));
+				label.colour = 0xAAAAAA;
+
+				EditBox editX = this.addWidget(
+						editBoxMaker,
+						option.getComponent("X")
+				);
+				editX.setMaxLength(128);
+				editX.setValue(opt.get().getXRepresentation());
+				editX.setResponder((string) -> {
+					try {
+						opt.set(ScreenPosition.parse(editX.getValue(), opt.get().getYRepresentation()));
+						this.invalid.remove(option.name);
+						this.settingsModified = true;
+					} catch (IllegalArgumentException e) {
+						this.invalid.add(option.name);
+					}
+
+					this.done.active = this.invalid.isEmpty();
+				});
+
+				// Edit Y value -- when setting, use existing X value
+				label = this.addWidget(Label::new, option.getComponent("Y"));
+				label.colour = 0xAAAAAA;
+
+				EditBox editY = this.addWidget(
+						editBoxMaker,
+						option.getComponent("Y")
+				);
+				editY.setMaxLength(128);
+				editY.setValue(opt.get().getYRepresentation());
+				editY.setResponder((string) -> {
+					try {
+						opt.set(ScreenPosition.parse(opt.get().getXRepresentation(), editY.getValue()));
+						this.invalid.remove(option.name);
+						this.settingsModified = true;
+					} catch (IllegalArgumentException e) {
+						this.invalid.add(option.name);
+					}
+
+					this.done.active = this.invalid.isEmpty();
+				});
 			} else {
 				throw new RuntimeException("Unknown option type " + option.getClass().getSimpleName());
 			}
@@ -139,7 +192,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 			// the only config that can be modified in the settings is the one stored in localConfig so save that
 			CONFIG_SAVE.execute(() -> {
 				Properties properties = new Properties();
-				Dash.localConfig.save(properties);
+				Dash.localConfig.save(properties, true);
 
 				try (FileWriter writer = new FileWriter(DashConfig.FILE)) {
 					properties.store(writer, "Double-Tap Dash mod config.");

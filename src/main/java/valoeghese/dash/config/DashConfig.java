@@ -2,6 +2,7 @@ package valoeghese.dash.config;
 
 import net.fabricmc.loader.api.FabricLoader;
 import valoeghese.dash.ScreenPosition;
+import valoeghese.dash.adapter.Adapter;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,10 +15,10 @@ public class DashConfig extends SynchronisedConfig {
 	}
 
 	// Client Side
-	public final TimeOption sensitivity = new TimeOption(this.options, "double_tap_sensitivity", 0.2);
+	public final TimeOption sensitivity = new TimeOption(this.clientOptions, "double_tap_sensitivity", 0.2);
 
 	public final ScreenPositionOption iconPosition = new ScreenPositionOption(
-			this.options,
+			this.clientOptions,
 			"icon",
 			new ScreenPosition(0, 0, 8, 0, 1, -32)
 	);
@@ -29,7 +30,8 @@ public class DashConfig extends SynchronisedConfig {
 		DashConfig config = new DashConfig();
 
 		// add defaults (these will be overridden by anything read in)
-		config.save(properties);
+		boolean client = !Adapter.INSTANCE.isDedicatedServer();
+		config.save(properties, client);
 
 		File file = FILE;
 
@@ -54,7 +56,7 @@ public class DashConfig extends SynchronisedConfig {
 			e.printStackTrace();
 		}
 
-		config.read(properties);
+		config.read(properties, client);
 		return config;
 	}
 }

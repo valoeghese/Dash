@@ -13,7 +13,7 @@
 
   "options.dtdash.cooldown": "Cooldown",
   "options.dtdash.resets_attack": "Reset Attack: %s",
-  "options.dtdash.sensitivity": "Sensitivity",
+  "options.dtdash.double_tap_sensitivity": "Sensitivity",
   "options.dtdash.exhaustion": "Exhaustion",
 
   "options.dtdash.double_tap_dash": "Double Tap Dash: %s",
@@ -28,7 +28,7 @@
   "options.dtdash.dash_while_swimming": "Dash While Swimming: %s",
   "options.dtdash.dash_while_floating": "Dash While Floating: %s",
 
-  "options.dtdash.icon_position": "Icon Position",
+  "options.dtdash.icon": "Icon Position (%s)",
 
   "screen.dtdash.client": "Client-Side",
   "screen.dtdash.config": "Dash Config",

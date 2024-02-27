@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import valoeghese.dash.adapter.Adapter;
 import valoeghese.dash.config.DashConfig;
 import valoeghese.dash.config.SynchronisedConfig;
 
@@ -47,7 +48,7 @@ public class Dash implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info(new Random().nextDouble() < 0.001 ? "Wir flitzen in die Zukunft!" : "Dashing into the future!");
-		activeConfig = localConfig = DashConfig.loadOrCreate(); // TODO on dedicated server don't write client-only options
+		activeConfig = localConfig = DashConfig.loadOrCreate();
 
 		ServerPlayConnectionEvents.INIT.register(new ServerPlayConnectionEvents.Init() {
 			@Override
@@ -60,7 +61,7 @@ public class Dash implements ModInitializer {
 
 				// serialise settings
 				Properties properties = new Properties();
-				localConfig.save(properties);
+				localConfig.save(properties, false);
 
 				try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 					properties.store(bos, "Double-Tap Dash Config");
