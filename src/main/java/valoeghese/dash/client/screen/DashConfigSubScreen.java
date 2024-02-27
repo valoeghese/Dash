@@ -88,6 +88,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 					try {
 						opt.setFromDouble(edit.getDoubleValue());
 						this.invalid.remove(option.name);
+						this.settingsModified = true;
 					} catch (NumberFormatException e) {
 						this.invalid.add(option.name);
 					}
@@ -142,6 +143,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 				try (FileWriter writer = new FileWriter(DashConfig.FILE)) {
 					properties.store(writer, "Double-Tap Dash mod config.");
+					Dash.LOGGER.info("Saved dash config.");
 				} catch (IOException e) {
 					Dash.LOGGER.error("Failed to save dash config!", e);
 				}
