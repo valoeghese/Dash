@@ -40,6 +40,31 @@ public class SynchronisedConfig {
 	public final BooleanOption dashWhileSwimming = new BooleanOption(this.options, "dash_while_swimming", false);
 	public final BooleanOption dashWhileFloating = new BooleanOption(this.options, "dash_while_floating", false);
 
+	/**
+	 * Get the number of available dash directions in cardinal axes.
+	 */
+	public List<Dash.DashDirection> availableDirectionsCardinal() {
+		List<Dash.DashDirection> result = new ArrayList<>();
+
+		if (this.backwardsDash.get()) {
+			result.add(Dash.DashDirection.BACKWARD);
+		}
+
+		if (this.forwardDash.get()) {
+			result.add(Dash.DashDirection.FORWARD);
+		}
+
+		if (this.leftDash.get()) {
+			result.add(Dash.DashDirection.LEFT);
+		}
+
+		if (this.rightDash.get()) {
+			result.add(Dash.DashDirection.RIGHT);
+		}
+
+		return result;
+	}
+
 	public void read(Properties properties, boolean client) {
 		this.read(properties, this.options);
 

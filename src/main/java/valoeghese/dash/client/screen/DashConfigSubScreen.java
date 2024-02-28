@@ -85,7 +85,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 				bn.active = this.unlocked;
 			} else if (option instanceof NumericalOption<?> opt) {
-				Label label = this.addWidget(Label::new, option.getComponent());
+				Label label = this.addWidget(Label::new, option.getComponent(), 200, 10);
 				label.colour = 0xAAAAAA;
 
 				NumberEditBox edit = this.addWidget(NumberEditBox::new, option.getComponent());
@@ -108,7 +108,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 				);
 
 				// Edit X value -- when setting, use existing Y value
-				Label label = this.addWidget(Label::new, option.getComponent("X"));
+				Label label = this.addWidget(Label::new, option.getComponent("X"), 200, 10);
 				label.colour = 0xAAAAAA;
 
 				EditBox editX = this.addWidget(
@@ -130,7 +130,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 				});
 
 				// Edit Y value -- when setting, use existing X value
-				label = this.addWidget(Label::new, option.getComponent("Y"));
+				label = this.addWidget(Label::new, option.getComponent("Y"), 200, 10);
 				label.colour = 0xAAAAAA;
 
 				EditBox editY = this.addWidget(

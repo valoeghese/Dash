@@ -22,12 +22,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import valoeghese.dash.Dash;
 import valoeghese.dash.DashTracker;
-import valoeghese.dash.config.DashConfig;
 import valoeghese.dash.config.SynchronisedConfig;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -110,7 +110,7 @@ public class DashClient implements ClientModInitializer {
 						.x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 				int y = (int) Dash.localConfig.iconPosition.get()
 						.y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
-				System.out.println(x + " " + y);
+//				System.out.println(x + " " + y);
 
 				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background
 				gui.blit(stack, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
@@ -127,35 +127,43 @@ public class DashClient implements ClientModInitializer {
 	public static boolean tryDash(boolean dashKeyPressed) {
 		Set<Dash.DashDirection> attempted = new HashSet<>();
 
-		if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed)) {
-			DashInputHandler.FORWARD_DASH.reset();
-			attempted.add(Dash.DashDirection.FORWARD);
-		}
+		// if dash key and only one dash direction exists, dash in that direction
+		List<Dash.DashDirection> availableDirections = Dash.activeConfig.availableDirectionsCardinal();
 
-		if (DashInputHandler.BACKWARDS_DASH.shouldDash(dashKeyPressed)) {
-			DashInputHandler.BACKWARDS_DASH.reset();
-			attempted.add(Dash.DashDirection.BACKWARD);
-		}
+		if (dashKeyPressed && availableDirections.size() == 1) {
+			attempted.add(availableDirections.get(0));
+		} else {
+			// otherwise, use input keys to determine dash direction
+			if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed)) {
+				DashInputHandler.FORWARD_DASH.reset();
+				attempted.add(Dash.DashDirection.FORWARD);
+			}
 
-		if (DashInputHandler.LEFT_DASH.shouldDash(dashKeyPressed)) {
-			DashInputHandler.LEFT_DASH.reset();
-			attempted.add(Dash.DashDirection.LEFT);
-		}
+			if (DashInputHandler.BACKWARDS_DASH.shouldDash(dashKeyPressed)) {
+				DashInputHandler.BACKWARDS_DASH.reset();
+				attempted.add(Dash.DashDirection.BACKWARD);
+			}
 
-		if (DashInputHandler.RIGHT_DASH.shouldDash(dashKeyPressed)) {
-			DashInputHandler.RIGHT_DASH.reset();
-			attempted.add(Dash.DashDirection.RIGHT);
-		}
+			if (DashInputHandler.LEFT_DASH.shouldDash(dashKeyPressed)) {
+				DashInputHandler.LEFT_DASH.reset();
+				attempted.add(Dash.DashDirection.LEFT);
+			}
 
-		// remove mirrors (cancel out)
-		if (attempted.contains(Dash.DashDirection.FORWARD) && attempted.contains(Dash.DashDirection.BACKWARD)) {
-			attempted.remove(Dash.DashDirection.FORWARD);
-			attempted.remove(Dash.DashDirection.BACKWARD);
-		}
+			if (DashInputHandler.RIGHT_DASH.shouldDash(dashKeyPressed)) {
+				DashInputHandler.RIGHT_DASH.reset();
+				attempted.add(Dash.DashDirection.RIGHT);
+			}
 
-		if (attempted.contains(Dash.DashDirection.LEFT) && attempted.contains(Dash.DashDirection.RIGHT)) {
-			attempted.remove(Dash.DashDirection.LEFT);
-			attempted.remove(Dash.DashDirection.RIGHT);
+			// remove mirrors (cancel out)
+			if (attempted.contains(Dash.DashDirection.FORWARD) && attempted.contains(Dash.DashDirection.BACKWARD)) {
+				attempted.remove(Dash.DashDirection.FORWARD);
+				attempted.remove(Dash.DashDirection.BACKWARD);
+			}
+
+			if (attempted.contains(Dash.DashDirection.LEFT) && attempted.contains(Dash.DashDirection.RIGHT)) {
+				attempted.remove(Dash.DashDirection.LEFT);
+				attempted.remove(Dash.DashDirection.RIGHT);
+			}
 		}
 
 		// now resolve the actual dash direction. either one or two directions in attempted at this point.
