@@ -24,8 +24,6 @@ public class SynchronisedConfig {
 	public final FloatOption exhaustion = new FloatOption(this.options, "exhaustion", 0.0f);
 
 	// What kinds of dash / trigger
-	public final BooleanOption doubleTapDash = new BooleanOption(this.options, "double_tap_dash", true);
-
 	public final BooleanOption forwardDash = new BooleanOption(this.options, "forward_dash", true);
 	public final BooleanOption backwardsDash = new BooleanOption(this.options, "backwards_dash", true);
 	public final BooleanOption leftDash = new BooleanOption(this.options, "left_dash", true);

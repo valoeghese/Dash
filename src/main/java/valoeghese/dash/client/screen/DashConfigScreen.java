@@ -24,7 +24,6 @@ public class DashConfigScreen extends SulphateScreen {
 		), false);
 
 		this.addSubMenu(new TranslatableComponent("screen.dtdash.directions"), ImmutableList.of(
-				Dash.activeConfig.doubleTapDash,
 				Dash.activeConfig.diagonalDash,
 				Dash.activeConfig.forwardDash,
 				Dash.activeConfig.backwardsDash,
@@ -40,6 +39,7 @@ public class DashConfigScreen extends SulphateScreen {
 		), false);
 
 		this.addSubMenu(new TranslatableComponent("screen.dtdash.client"), ImmutableList.of(
+				Dash.localConfig.doubleTapDash,
 				Dash.localConfig.sensitivity,
 				Dash.localConfig.iconPosition
 		), true);

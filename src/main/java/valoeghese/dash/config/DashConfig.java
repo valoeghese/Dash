@@ -23,6 +23,8 @@ public class DashConfig extends SynchronisedConfig {
 			new ScreenPosition(0, 0, 8, 0, 100, -32)
 	);
 
+	public final BooleanOption doubleTapDash = new BooleanOption(this.clientOptions, "double_tap_dash", true);
+
 	public static final File FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
 
 	public static DashConfig loadOrCreate() {
