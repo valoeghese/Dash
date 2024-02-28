@@ -20,7 +20,7 @@ public class DashConfig extends SynchronisedConfig {
 	public final ScreenPositionOption iconPosition = new ScreenPositionOption(
 			this.clientOptions,
 			"icon",
-			new ScreenPosition(0, 0, 8, 0, 1, -32)
+			new ScreenPosition(0, 0, 8, 0, 100, -32)
 	);
 
 	public static final File FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");

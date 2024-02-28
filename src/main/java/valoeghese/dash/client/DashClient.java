@@ -110,6 +110,7 @@ public class DashClient implements ClientModInitializer {
 						.x(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 				int y = (int) Dash.localConfig.iconPosition.get()
 						.y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
+				System.out.println(x + " " + y);
 
 				gui.blit(stack, x, y - 8, 0, 0, 32, 32); // render the background
 				gui.blit(stack, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
