@@ -10,6 +10,8 @@ public interface Adapter {
 	 */
 	boolean isDedicatedServer();
 
+	// TODO network system that is able to be implemented on any platform
+
 	/**
 	 * The adapter instance for this current platform.
 	 */
