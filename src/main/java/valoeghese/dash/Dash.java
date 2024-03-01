@@ -32,7 +32,6 @@ public class Dash implements ModInitializer {
 
 	// S2C
 	public static final ResourceLocation RESET_TIMER_PACKET = new ResourceLocation("dtdash", "update_timer");
-	public static final ResourceLocation SYNC_CONFIG_PACKET = new ResourceLocation("dtdash", "sync");
 
 	public static DashConfig localConfig;
 	public static SynchronisedConfig activeConfig; // may be either localConfig or the server config
