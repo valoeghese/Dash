@@ -22,7 +22,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import valoeghese.dash.Dash;
 import valoeghese.dash.DashTracker;
+import valoeghese.dash.adapter.client.ClientAdapter;
 import valoeghese.dash.config.SynchronisedConfig;
+import valoeghese.dash.network.ClientboundResetTimerPacket;
+import valoeghese.dash.network.ClientboundSyncConfigPacket;
+import valoeghese.dash.network.ServerboundDashPacket;
 
 import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
@@ -67,26 +71,19 @@ public class DashClient implements ClientModInitializer {
 				"key.categories.movement"
 		));
 
-		ClientPlayNetworking.registerGlobalReceiver(Dash.RESET_TIMER_PACKET, (client, handler, buf, responseSender) -> {
-			client.player.resetAttackStrengthTicker();
+		ClientAdapter.INSTANCE.registerClientboundReceiver(ClientboundResetTimerPacket.PACKET, (packet, context) -> {
+			context.client().player.resetAttackStrengthTicker();
 		});
 
-		ClientPlayNetworking.registerGlobalReceiver(Dash.SYNC_CONFIG_PACKET, (client, handler, buf, responseSender) -> {
+		ClientAdapter.INSTANCE.registerClientboundReceiver(ClientboundSyncConfigPacket.PACKET, (packet, context) -> {
 			try {
-				byte[] bytes = buf.readByteArray();
-				Properties properties = new Properties();
-
-				try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {
-					properties.load(stream);
-				}
-
 				SynchronisedConfig config = new SynchronisedConfig();
-				config.read(properties, false); // client-side options cannot be controlled by server.
+				config.read(packet.properties(), false); // client-side options cannot be controlled by server.
 
 				Dash.activeConfig = config;
 				Dash.LOGGER.info("Successfully synchronised config.");
 			} catch (Exception e) {
-				handler.getConnection().disconnect(new TranslatableComponent("dtdash.err.sync_parse", e.toString()));
+				context.connection().disconnect(new TranslatableComponent("dtdash.err.sync_parse", e.toString()));
 			}
 		});
 	}
@@ -205,8 +202,6 @@ public class DashClient implements ClientModInitializer {
 	}
 
 	private static void sendDash(Dash.DashDirection direction) {
-		FriendlyByteBuf buf = PacketByteBufs.create();
-		buf.writeByte(direction.ordinal());
-		ClientPlayNetworking.send(Dash.DASH_PACKET, buf);
+		ClientAdapter.INSTANCE.sendToServer(new ServerboundDashPacket(direction));
 	}
 }

@@ -3,6 +3,8 @@ package valoeghese.dash.network;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import valoeghese.dash.adapter.Adapter;
+import valoeghese.dash.adapter.Packet;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,5 +39,9 @@ public record ClientboundSyncConfigPacket(Properties properties) {
 		}
 	}
 
-	public static final ResourceLocation ID = new ResourceLocation("dtdash", "sync");
+	public static final Packet<ClientboundSyncConfigPacket> PACKET = new Packet<>(
+			new ResourceLocation("dtdash", "sync"),
+			ClientboundSyncConfigPacket::encode,
+			ClientboundSyncConfigPacket::decode
+	);
 }

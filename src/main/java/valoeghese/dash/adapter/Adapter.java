@@ -1,12 +1,9 @@
 package valoeghese.dash.adapter;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import valoeghese.dash.adapter.fabric.FabricAdapter;
+import net.minecraft.server.level.ServerPlayer;
+import valoeghese.dash.fabric.FabricAdapter;
 
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 /**
  * Adapt forge and fabric specific things.
@@ -22,30 +19,29 @@ public interface Adapter {
 
 	/**
 	 * Register a packet.
-	 * @param id the id of the packet.
+	 * @param direction the direction the packet is sent.
 	 * @param clazz the packet class.
-	 * @param encoder the encoder for the packet.
-	 * @param decoder the decoder for the packet.
+	 * @param packet the packet class.
 	 * @param <T> the packet class.
+	 * @return a reference to the registered packet.
 	 */
-	<T> void registerPacket(ResourceLocation id, Class<T> clazz, BiConsumer<T, FriendlyByteBuf> encoder,
-									   Function<FriendlyByteBuf, T> decoder);
+	<T> Packet<T> registerPacket(PacketDirection direction, Class<T> clazz, Packet<T> packet);
 
 	/**
 	 * Register a serverbound packet handler.
-	 * @param id the id of the packet to register a receiver for.
+	 * @param packet the packet to register a receiver for.
 	 * @param handler the function to run on the server when a packet is received.
 	 * @param <T> the packet class.
 	 */
-	<T> void registerServerboundReceiver(ResourceLocation id, BiConsumer<T, C2SContext> handler);
+	<T> void registerServerboundReceiver(Packet<T> packet, BiConsumer<T, C2SContext> handler);
 
 	/**
-	 * Send a packet to the client.
+	 * Send a packet to a given client.
 	 * @param player the player to send the packet to.
 	 * @param packet the packet to send to the client.
 	 * @throws IllegalArgumentException if the packet object is not a recognised dash packet.
 	 */
-	void sendClientboundPacket(Player player, Object packet);
+	void sendToPlayer(ServerPlayer player, Object packet);
 
 	/**
 	 * The adapter instance for this current platform.

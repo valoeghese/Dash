@@ -5,19 +5,22 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import valoeghese.dash.adapter.Adapter;
+import valoeghese.dash.adapter.PacketDirection;
 import valoeghese.dash.config.DashConfig;
 import valoeghese.dash.config.SynchronisedConfig;
+import valoeghese.dash.network.ClientboundResetTimerPacket;
+import valoeghese.dash.network.ClientboundSyncConfigPacket;
+import valoeghese.dash.network.ServerboundDashPacket;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -26,12 +29,6 @@ import java.util.Random;
 
 public class Dash implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
-
-	// C2S
-	public static final ResourceLocation DASH_PACKET = new ResourceLocation("dtdash", "dash_action");
-
-	// S2C
-	public static final ResourceLocation RESET_TIMER_PACKET = new ResourceLocation("dtdash", "update_timer");
 
 	public static DashConfig localConfig;
 	public static SynchronisedConfig activeConfig; // may be either localConfig or the server config
@@ -65,73 +62,95 @@ public class Dash implements ModInitializer {
 				try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
 					properties.store(bos, "Double-Tap Dash Config");
 
-					// create buf
-					FriendlyByteBuf buf = PacketByteBufs.create();
-					buf.writeByteArray(bos.toByteArray());
-					ServerPlayNetworking.send(handler.player, SYNC_CONFIG_PACKET, buf);
+					// send properties
+					Adapter.INSTANCE.sendToPlayer(handler.player, new ClientboundSyncConfigPacket(properties));
 				} catch (IOException e) {
 					handler.disconnect(new TranslatableComponent("dtdash.err.sync", e.toString()));
 				}
 			}
 		});
 
-		ServerPlayNetworking.registerGlobalReceiver(DASH_PACKET, (server, player, handler, buf, responseSender) -> {
-			long time = player.level.getGameTime();
-			DashTracker tracker = (DashTracker) player;
-			byte dir = buf.readByte();
+		// Register Packets
 
-			server.execute(() -> {
-				if (canDash(player) && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
-					tracker.setLastDash(time);
-					// TODO check dash direction allowed against dash direction
-					// if diagonal try restore to a legal single if possible - May not implement cause client's problem
-					// anyway. likely trying to cheat if this happens (or sync fail)
+		Adapter.INSTANCE.registerPacket(
+				PacketDirection.SERVERBOUND,
+				ServerboundDashPacket.class,
+				ServerboundDashPacket.PACKET
+		);
 
-					Vec3 look = player.getLookAngle().normalize();
-					Vec3m horizontalDirectionVector = new Vec3m(0, 0, 0);
-					DashDirection direction = DashDirection.values()[dir];
+		Adapter.INSTANCE.registerPacket(
+				PacketDirection.CLIENTBOUND,
+				ClientboundSyncConfigPacket.class,
+				ClientboundSyncConfigPacket.PACKET
+		);
 
-					// add directions
-					if (direction.isForward()) {
-						horizontalDirectionVector.add(look.x, 0, look.z);
-					}
+		Adapter.INSTANCE.registerPacket(
+				PacketDirection.CLIENTBOUND,
+				ClientboundResetTimerPacket.class,
+				ClientboundResetTimerPacket.PACKET
+		);
 
-					if (direction.isBackwards()) {
-						horizontalDirectionVector.add(-look.x, 0, -look.z);
-					}
+		// Receivers
 
-					if (direction.isLeft()) {
-						horizontalDirectionVector.add(look.z, 0, -look.x);
-					}
+		Adapter.INSTANCE.registerServerboundReceiver(
+				ServerboundDashPacket.PACKET,
+				(packet, context) -> {
+					ServerPlayer player = context.player();
+					long time = player.level.getGameTime();
+					DashTracker tracker = (DashTracker) player;
 
-					if (direction.isRight()) {
-						horizontalDirectionVector.add(-look.z, 0, look.x);
-					}
+					context.workEnqueuer().accept(() -> {
+						if (canDash(player) && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
+							tracker.setLastDash(time);
+							// TODO check dash direction allowed against dash direction
+							// if diagonal try restore to a legal single if possible - May not implement cause client's problem
+							// anyway. likely trying to cheat if this happens (or sync fail)
 
-					// normalise and apply strength, then add y velocity
-					Vec3 move = horizontalDirectionVector.ofLength(activeConfig.strength.get())
-							.add(0, activeConfig.yVelocity.get(), 0);
+							Vec3 look = player.getLookAngle().normalize();
+							Vec3m horizontalDirectionVector = new Vec3m(0, 0, 0);
+							DashDirection direction = packet.direction();
 
-					// move the player in that direction
-					if (activeConfig.momentumMode.get() == MomentumMode.SET) {
-						player.setDeltaMovement(move.x, move.y, move.z);
-					} else {
-						player.push(move.x, move.y, move.z);
-					}
+							// add directions
+							if (direction.isForward()) {
+								horizontalDirectionVector.add(look.x, 0, look.z);
+							}
 
-					player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), player.getDeltaMovement()));
+							if (direction.isBackwards()) {
+								horizontalDirectionVector.add(-look.x, 0, -look.z);
+							}
 
-					if (activeConfig.resetAttack.get()) {
-						player.resetAttackStrengthTicker();
-						ServerPlayNetworking.send(player, RESET_TIMER_PACKET, PacketByteBufs.create());
-					}
+							if (direction.isLeft()) {
+								horizontalDirectionVector.add(look.z, 0, -look.x);
+							}
 
-					// apply exhaustion (affects hunger)
-					// by default this is 0 so won't have any effect
-					player.causeFoodExhaustion(activeConfig.exhaustion.get());
-				}
-			});
-		});
+							if (direction.isRight()) {
+								horizontalDirectionVector.add(-look.z, 0, look.x);
+							}
+
+							// normalise and apply strength, then add y velocity
+							Vec3 move = horizontalDirectionVector.ofLength(activeConfig.strength.get())
+									.add(0, activeConfig.yVelocity.get(), 0);
+
+							// move the player in that direction
+							if (activeConfig.momentumMode.get() == MomentumMode.SET) {
+								player.setDeltaMovement(move.x, move.y, move.z);
+							} else {
+								player.push(move.x, move.y, move.z);
+							}
+
+							player.connection.send(new ClientboundSetEntityMotionPacket(player.getId(), player.getDeltaMovement()));
+
+							if (activeConfig.resetAttack.get()) {
+								player.resetAttackStrengthTicker();
+								Adapter.INSTANCE.sendToPlayer(player, new ClientboundResetTimerPacket());
+							}
+
+							// apply exhaustion (affects hunger)
+							// by default this is 0 so won't have any effect
+							player.causeFoodExhaustion(activeConfig.exhaustion.get());
+						}
+					});
+				});
 	}
 
 	public enum DashDirection {
