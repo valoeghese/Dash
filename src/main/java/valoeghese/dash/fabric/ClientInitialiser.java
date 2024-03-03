@@ -14,7 +14,7 @@ public class ClientInitialiser implements ClientModInitializer {
 		ClientPlayConnectionEvents.DISCONNECT.register((handler, minecraft) -> client.onDisconnect());
 
 		// run setup
-		client.setup();
+		client.setupNetwork();
 
 		// register stuff
 		client.onRegisterKeyMappings(KeyBindingHelper::registerKeyBinding);

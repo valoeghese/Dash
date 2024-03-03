@@ -1,6 +1,5 @@
 package valoeghese.dash.config;
 
-import net.fabricmc.loader.api.FabricLoader;
 import valoeghese.dash.ScreenPosition;
 import valoeghese.dash.adapter.Adapter;
 
@@ -25,7 +24,7 @@ public class DashConfig extends SynchronisedConfig {
 
 	public final BooleanOption doubleTapDash = new BooleanOption(this.clientOptions, "double_tap_dash", true);
 
-	public static final File FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "dash.properties");
+	public static final File FILE = new File(Adapter.INSTANCE.getConfigFolder(), "dash.properties");
 
 	public static DashConfig loadOrCreate() {
 		Properties properties = new Properties();

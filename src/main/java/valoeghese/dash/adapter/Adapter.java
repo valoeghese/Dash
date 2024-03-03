@@ -3,6 +3,7 @@ package valoeghese.dash.adapter;
 import net.minecraft.server.level.ServerPlayer;
 import valoeghese.dash.fabric.FabricAdapter;
 
+import java.io.File;
 import java.util.function.BiConsumer;
 
 /**
@@ -14,6 +15,12 @@ public interface Adapter {
 	 * @return whether we are on the dedicated server.
 	 */
 	boolean isDedicatedServer();
+
+	/**
+	 * Get the config folder location on the current platform.
+	 * @return the config folder location.
+	 */
+	File getConfigFolder();
 
 	// Networking
 

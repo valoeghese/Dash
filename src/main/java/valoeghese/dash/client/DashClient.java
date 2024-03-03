@@ -28,7 +28,7 @@ import java.util.function.UnaryOperator;
 
 public class DashClient {
 	// Events
-	public void setup() {
+	public void setupNetwork() {
 		Dash.LOGGER.info("Initialising Double-Tap Dash Client");
 
 		ClientAdapter.INSTANCE.registerClientboundReceiver(ClientboundResetTimerPacket.PACKET, (packet, context) -> {

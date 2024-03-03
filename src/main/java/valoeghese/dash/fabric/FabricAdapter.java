@@ -12,6 +12,7 @@ import valoeghese.dash.adapter.C2SContext;
 import valoeghese.dash.adapter.Packet;
 import valoeghese.dash.adapter.PacketDirection;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -27,6 +28,11 @@ public class FabricAdapter implements Adapter {
 	@Override
 	public boolean isDedicatedServer() {
 		return FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER;
+	}
+
+	@Override
+	public File getConfigFolder() {
+		return FabricLoader.getInstance().getConfigDir().toFile();
 	}
 
 	@Override

@@ -1,11 +1,19 @@
 package valoeghese.dash.fabric;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import valoeghese.dash.Dash;
 
 public class CommonInitialiser implements ModInitializer {
 	@Override
 	public void onInitialize() {
-		new Dash().setup();
+		Dash common = new Dash();
+
+		// set up
+		common.setup();
+		common.setupNetwork();
+
+		// register event
+		ServerPlayConnectionEvents.INIT.register((handler, server) -> common.onClientJoinGame(handler));
 	}
 }

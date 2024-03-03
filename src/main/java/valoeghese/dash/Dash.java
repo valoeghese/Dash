@@ -1,9 +1,7 @@
 package valoeghese.dash;
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
@@ -27,31 +25,9 @@ public class Dash {
 	public void setup() {
 		LOGGER.info(new Random().nextDouble() < 0.001 ? "Wir flitzen in die Zukunft!" : "Dashing into the future!");
 		activeConfig = localConfig = DashConfig.loadOrCreate();
+	}
 
-		ServerPlayConnectionEvents.INIT.register(new ServerPlayConnectionEvents.Init() {
-			@Override
-			public void onPlayInit(ServerGamePacketListenerImpl handler, MinecraftServer server) {
-				LOGGER.info("Connection Established");
-
-				// sync even if connecting to local server
-				// This informs the client that they cannot change settings. Perhaps in the future we can reverse this
-				// restriction if we implement it that the settings can be changed once in game.
-
-				// serialise settings
-				Properties properties = new Properties();
-				localConfig.save(properties, false);
-
-				try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-					properties.store(bos, "Double-Tap Dash Config");
-
-					// send properties
-					Adapter.INSTANCE.sendToPlayer(handler.player, new ClientboundSyncConfigPacket(properties));
-				} catch (IOException e) {
-					handler.disconnect(new TranslatableComponent("dtdash.err.sync", e.toString()));
-				}
-			}
-		});
-
+	public void setupNetwork() {
 		// Register Packets
 
 		Adapter.INSTANCE.registerPacket(
@@ -133,6 +109,30 @@ public class Dash {
 						}
 					});
 				});
+	}
+
+	/**
+	 * Runs when a client connection to this server enters PLAY state.
+	 */
+	public void onClientJoinGame(ServerGamePacketListenerImpl handler) {
+		LOGGER.info("Connection Established");
+
+		// sync even if connecting to local server
+		// This informs the client that they cannot change settings. Perhaps in the future we can reverse this
+		// restriction if we implement it that the settings can be changed and synced to connected clients once in game.
+
+		// serialise settings
+		Properties properties = new Properties();
+		localConfig.save(properties, false);
+
+		try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+			properties.store(bos, "Double-Tap Dash Config");
+
+			// send properties
+			Adapter.INSTANCE.sendToPlayer(handler.player, new ClientboundSyncConfigPacket(properties));
+		} catch (IOException e) {
+			handler.disconnect(new TranslatableComponent("dtdash.err.sync", e.toString()));
+		}
 	}
 
 	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
