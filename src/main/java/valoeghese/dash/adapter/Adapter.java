@@ -26,13 +26,12 @@ public interface Adapter {
 
 	/**
 	 * Register a packet.
-	 * @param direction the direction the packet is sent.
 	 * @param clazz the packet class.
 	 * @param packet the packet class.
 	 * @param <T> the packet class.
 	 * @return a reference to the registered packet.
 	 */
-	<T> Packet<T> registerPacket(PacketDirection direction, Class<T> clazz, Packet<T> packet);
+	<T> Packet<T> registerPacket(Class<T> clazz, Packet<T> packet);
 
 	/**
 	 * Register a serverbound packet handler.

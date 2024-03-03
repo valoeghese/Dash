@@ -9,7 +9,6 @@ import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import valoeghese.dash.adapter.Adapter;
-import valoeghese.dash.adapter.PacketDirection;
 import valoeghese.dash.config.DashConfig;
 import valoeghese.dash.config.SynchronisedConfig;
 import valoeghese.dash.network.ClientboundResetTimerPacket;
@@ -31,19 +30,16 @@ public class Dash {
 		// Register Packets
 
 		Adapter.INSTANCE.registerPacket(
-				PacketDirection.SERVERBOUND,
 				ServerboundDashPacket.class,
 				ServerboundDashPacket.PACKET
 		);
 
 		Adapter.INSTANCE.registerPacket(
-				PacketDirection.CLIENTBOUND,
 				ClientboundSyncConfigPacket.class,
 				ClientboundSyncConfigPacket.PACKET
 		);
 
 		Adapter.INSTANCE.registerPacket(
-				PacketDirection.CLIENTBOUND,
 				ClientboundResetTimerPacket.class,
 				ClientboundResetTimerPacket.PACKET
 		);

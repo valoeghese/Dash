@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import valoeghese.dash.adapter.Adapter;
 import valoeghese.dash.adapter.C2SContext;
 import valoeghese.dash.adapter.Packet;
-import valoeghese.dash.adapter.PacketDirection;
 
 import java.io.File;
 import java.util.HashMap;
@@ -36,7 +35,7 @@ public class FabricAdapter implements Adapter {
 	}
 
 	@Override
-	public <T> Packet<T> registerPacket(PacketDirection direction, Class<T> clazz, Packet<T> packet) {
+	public <T> Packet<T> registerPacket(Class<T> clazz, Packet<T> packet) {
 		this.packets.put(clazz, packet);
 		return packet;
 	}
