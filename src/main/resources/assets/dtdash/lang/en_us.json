@@ -21,7 +21,7 @@
   "options.dtdash.double_tap_sensitivity": "Sensitivity",
   "options.dtdash.exhaustion": "Exhaustion",
 
-  "options.dtdash.double_tap_dash": "Double Tap Dash: %s",
+  "options.dtdash.double_tap_dash": "Double-Tap to Dash: %s",
   "options.dtdash.forward_dash": "Forward Dash: %s",
   "options.dtdash.backwards_dash": "Backward Dash: %s",
   "options.dtdash.left_dash": "Left Dash: %s",

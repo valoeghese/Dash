@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
@@ -27,24 +26,10 @@ import valoeghese.dash.network.ServerboundDashPacket;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-public class DashClient implements ClientModInitializer {
-	private static final ResourceLocation DASH_ICONS = new ResourceLocation("dtdash", "textures/dash_icons.png");
-	private static KeyMapping dashKey;
-	// Forward, Backwards, Left, Right (mirrors Dash.DashDirection)
-	private static KeyMapping[] singleDirectionKeys = new KeyMapping[4];
-
-	/**
-	 * Options hack.
-	 * Temporarily stores the options during onOptionsLoad.
-	 */
-	@Nullable
-	public static Options options;
-
-	@Override
-	public void onInitializeClient() {
+public class DashClient {
+	public void setup() {
 		Dash.LOGGER.info("Initialising Double-Tap Dash Client");
 
 		// Synchronise Settings on Join
@@ -113,6 +98,18 @@ public class DashClient implements ClientModInitializer {
 			}
 		});
 	}
+
+	private static final ResourceLocation DASH_ICONS = new ResourceLocation("dtdash", "textures/dash_icons.png");
+	private static KeyMapping dashKey;
+	// Forward, Backwards, Left, Right (mirrors Dash.DashDirection)
+	private static KeyMapping[] singleDirectionKeys = new KeyMapping[4];
+
+	/**
+	 * Options hack.
+	 * Temporarily stores the options during onOptionsLoad.
+	 */
+	@Nullable
+	public static Options options;
 
 	public static void renderBar(PoseStack stack, Gui gui) {
 		Player player = Minecraft.getInstance().player;

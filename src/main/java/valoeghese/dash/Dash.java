@@ -1,10 +1,6 @@
 package valoeghese.dash;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.MinecraftServer;
@@ -27,22 +23,8 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
 
-public class Dash implements ModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
-
-	public static DashConfig localConfig;
-	public static SynchronisedConfig activeConfig; // may be either localConfig or the server config
-
-	public static boolean canDash(Player player) {
-		if (player.isSwimming()) return activeConfig.dashWhileSwimming.get();
-		if (player.isFallFlying()) return activeConfig.dashWhileGliding.get();
-		if (player.isInWater()) return activeConfig.dashWhileFloating.get();
-
-		return player.isOnGround() || activeConfig.dashMidair.get();
-	}
-
-	@Override
-	public void onInitialize() {
+public class Dash {
+	public void setup() {
 		LOGGER.info(new Random().nextDouble() < 0.001 ? "Wir flitzen in die Zukunft!" : "Dashing into the future!");
 		activeConfig = localConfig = DashConfig.loadOrCreate();
 
@@ -151,6 +133,19 @@ public class Dash implements ModInitializer {
 						}
 					});
 				});
+	}
+
+	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
+
+	public static DashConfig localConfig;
+	public static SynchronisedConfig activeConfig; // may be either localConfig or the server config
+
+	public static boolean canDash(Player player) {
+		if (player.isSwimming()) return activeConfig.dashWhileSwimming.get();
+		if (player.isFallFlying()) return activeConfig.dashWhileGliding.get();
+		if (player.isInWater()) return activeConfig.dashWhileFloating.get();
+
+		return player.isOnGround() || activeConfig.dashMidair.get();
 	}
 
 	public enum DashDirection {
