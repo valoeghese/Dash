@@ -4,13 +4,10 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -27,60 +24,12 @@ import valoeghese.dash.network.ServerboundDashPacket;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 
 public class DashClient {
+	// Events
 	public void setup() {
 		Dash.LOGGER.info("Initialising Double-Tap Dash Client");
-
-		// Synchronise Settings on Join
-		// Restore Settings on Leave
-
-		ClientPlayConnectionEvents.DISCONNECT.register(new ClientPlayConnectionEvents.Disconnect() {
-			@Override
-			public void onPlayDisconnect(ClientPacketListener handler, Minecraft client) {
-				// in case was using server config, ensure active config is reset to the client's config.
-				if (Dash.activeConfig != Dash.localConfig) {
-					Dash.LOGGER.info("Disconnected from server: Switching to Client's local Config");
-					Dash.activeConfig = Dash.localConfig;
-				}
-			}
-		});
-
-		// register dash key
-		dashKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.dtdash.dash",
-				InputConstants.Type.KEYSYM,
-				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.dtdash"
-		));
-
-		singleDirectionKeys[0] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.dtdash.dash_forward",
-				InputConstants.Type.KEYSYM,
-				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.dtdash"
-		));
-
-		singleDirectionKeys[1] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.dtdash.dash_backwards",
-				InputConstants.Type.KEYSYM,
-				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.dtdash"
-		));
-
-		singleDirectionKeys[2] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.dtdash.dash_left",
-				InputConstants.Type.KEYSYM,
-				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.dtdash"
-		));
-
-		singleDirectionKeys[3] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
-				"key.dtdash.dash_right",
-				InputConstants.Type.KEYSYM,
-				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.dtdash"
-		));
 
 		ClientAdapter.INSTANCE.registerClientboundReceiver(ClientboundResetTimerPacket.PACKET, (packet, context) -> {
 			context.client().player.resetAttackStrengthTicker();
@@ -99,10 +48,63 @@ public class DashClient {
 		});
 	}
 
+	public void onRegisterKeyMappings(UnaryOperator<KeyMapping> registry) {
+		// register dash keys
+		dashKey = registry.apply(new KeyMapping(
+				"key.dtdash.dash",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+
+		// register single tap dash keys
+
+		singleDirectionKeys[0] = registry.apply(new KeyMapping(
+				"key.dtdash.dash_forward",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+
+		singleDirectionKeys[1] = registry.apply(new KeyMapping(
+				"key.dtdash.dash_backwards",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+
+		singleDirectionKeys[2] = registry.apply(new KeyMapping(
+				"key.dtdash.dash_left",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+
+		singleDirectionKeys[3] = registry.apply(new KeyMapping(
+				"key.dtdash.dash_right",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+	}
+
+	public void onDisconnect() {
+		// Synchronise Settings on Join
+		// Restore Settings on Leave
+
+		// in case was using server config, ensure active config is reset to the client's config.
+		if (Dash.activeConfig != Dash.localConfig) {
+			Dash.LOGGER.info("Disconnected from server: Switching to Client's local Config");
+			Dash.activeConfig = Dash.localConfig;
+		}
+	}
+
+	// General Utilities
+
 	private static final ResourceLocation DASH_ICONS = new ResourceLocation("dtdash", "textures/dash_icons.png");
 	private static KeyMapping dashKey;
 	// Forward, Backwards, Left, Right (mirrors Dash.DashDirection)
-	private static KeyMapping[] singleDirectionKeys = new KeyMapping[4];
+	private static final KeyMapping[] singleDirectionKeys = new KeyMapping[4];
 
 	/**
 	 * Options hack.

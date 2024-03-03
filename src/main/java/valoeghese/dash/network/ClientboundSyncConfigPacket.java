@@ -1,9 +1,7 @@
 package valoeghese.dash.network;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import valoeghese.dash.adapter.Adapter;
 import valoeghese.dash.adapter.Packet;
 
 import java.io.ByteArrayInputStream;
