@@ -59,6 +59,8 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 	@Override
 	protected void addWidgets() {
+		Set<EditBoxPlus> editBoxes = new HashSet<>();
+
 		for (Option<?> option : this.options) {
 			// would put this in a method, but GUI is client only.
 			if (option instanceof BooleanOption opt) {
@@ -104,12 +106,14 @@ public class DashConfigSubScreen extends SulphateScreen {
 				});
 
 				edit.active = this.unlocked;
+				edit.setEditable(edit.active);
+				edit.addToGroup(editBoxes);
 
 				if (!this.unlocked) {
 					edit.onTooltip = this.disabledTooltip;
 				}
 			} else if (option instanceof ScreenPositionOption opt) {
-				WidgetConstructor<EditBox> editBoxMaker = (x, y, width, height, component) -> new EditBox(
+				WidgetConstructor<EditBoxPlus> editBoxMaker = (x, y, width, height, component) -> new EditBoxPlus(
 						this.font, x, y, width, height, component
 				);
 
@@ -117,7 +121,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 				Label label = this.addWidget(Label::new, option.getComponent("X"), 200, 10);
 				label.colour = 0xAAAAAA;
 
-				EditBox editX = this.addWidget(
+				EditBoxPlus editX = this.addWidget(
 						editBoxMaker,
 						option.getComponent("X")
 				);
@@ -134,14 +138,16 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 					this.done.active = this.invalid.isEmpty();
 				});
+				editX.addToGroup(editBoxes);
 
-				editX.active = this.unlocked;
+				// we only have client side screen position options so honestly not that important
+				editX.setEditable(this.unlocked);
 
 				// Edit Y value -- when setting, use existing X value
 				label = this.addWidget(Label::new, option.getComponent("Y"), 200, 10);
 				label.colour = 0xAAAAAA;
 
-				EditBox editY = this.addWidget(
+				EditBoxPlus editY = this.addWidget(
 						editBoxMaker,
 						option.getComponent("Y")
 				);
@@ -158,8 +164,9 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 					this.done.active = this.invalid.isEmpty();
 				});
+				editY.addToGroup(editBoxes);
 
-				editY.active = this.unlocked;
+				editY.setEditable(this.unlocked);
 			} else {
 				throw new RuntimeException("Unknown option type " + option.getClass().getSimpleName());
 			}
