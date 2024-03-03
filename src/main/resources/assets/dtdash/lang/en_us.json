@@ -6,6 +6,11 @@
   "dtdash.momentum_mode.set": "Set",
 
   "key.dtdash.dash": "Dash",
+  "key.dtdash.dash_forward": "Forward Dash",
+  "key.dtdash.dash_backwards": "Backward Dash",
+  "key.dtdash.dash_left": "Left Dash",
+  "key.dtdash.dash_right": "Right Dash",
+  "key.categories.dtdash": "Double-tap Dash",
 
   "options.dtdash.strength": "Strength",
   "options.dtdash.y_velocity": "Y Velocity",

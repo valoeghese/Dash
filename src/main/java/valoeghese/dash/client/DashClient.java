@@ -33,6 +33,9 @@ import java.util.Set;
 public class DashClient implements ClientModInitializer {
 	private static final ResourceLocation DASH_ICONS = new ResourceLocation("dtdash", "textures/dash_icons.png");
 	private static KeyMapping dashKey;
+	// Forward, Backwards, Left, Right (mirrors Dash.DashDirection)
+	private static KeyMapping[] singleDirectionKeys = new KeyMapping[4];
+
 	/**
 	 * Options hack.
 	 * Temporarily stores the options during onOptionsLoad.
@@ -63,7 +66,35 @@ public class DashClient implements ClientModInitializer {
 				"key.dtdash.dash",
 				InputConstants.Type.KEYSYM,
 				InputConstants.UNKNOWN.getValue(), // not bound by default
-				"key.categories.movement"
+				"key.categories.dtdash"
+		));
+
+		singleDirectionKeys[0] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+				"key.dtdash.dash_forward",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+
+		singleDirectionKeys[1] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+				"key.dtdash.dash_backwards",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+
+		singleDirectionKeys[2] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+				"key.dtdash.dash_left",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
+		));
+
+		singleDirectionKeys[3] = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+				"key.dtdash.dash_right",
+				InputConstants.Type.KEYSYM,
+				InputConstants.UNKNOWN.getValue(), // not bound by default
+				"key.categories.dtdash"
 		));
 
 		ClientAdapter.INSTANCE.registerClientboundReceiver(ClientboundResetTimerPacket.PACKET, (packet, context) -> {
@@ -117,46 +148,46 @@ public class DashClient implements ClientModInitializer {
 
 	// This code could be much better beautified by extracting commonalities but it's not gonna change any time soon and it's 1am
 	public static boolean tryDash(boolean dashKeyPressed) {
+		// always consume click, not conditionally
+		boolean fwdDash = singleDirectionKeys[0].consumeClick();
+		boolean backDash = singleDirectionKeys[1].consumeClick();
+		boolean leftDash = singleDirectionKeys[2].consumeClick();
+		boolean rightDash = singleDirectionKeys[3].consumeClick();
+
 		Set<Dash.DashDirection> attempted = new HashSet<>();
 
-		// if dash key and only one dash direction exists, dash in that direction
-		List<Dash.DashDirection> availableDirections = Dash.activeConfig.availableDirectionsCardinal();
-
 		if (Dash.canDash(Minecraft.getInstance().player)) {
-			if (dashKeyPressed && availableDirections.size() == 1) {
-					attempted.add(availableDirections.get(0));
-			} else {
-				// otherwise, use input keys to determine dash direction
-				if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed)) {
-					DashInputHandler.FORWARD_DASH.reset();
-					attempted.add(Dash.DashDirection.FORWARD);
-				}
+			// determine dash direction from input keys
 
-				if (DashInputHandler.BACKWARDS_DASH.shouldDash(dashKeyPressed)) {
-					DashInputHandler.BACKWARDS_DASH.reset();
-					attempted.add(Dash.DashDirection.BACKWARD);
-				}
+			if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed) || fwdDash) {
+				DashInputHandler.FORWARD_DASH.reset();
+				attempted.add(Dash.DashDirection.FORWARD);
+			}
 
-				if (DashInputHandler.LEFT_DASH.shouldDash(dashKeyPressed)) {
-					DashInputHandler.LEFT_DASH.reset();
-					attempted.add(Dash.DashDirection.LEFT);
-				}
+			if (DashInputHandler.BACKWARDS_DASH.shouldDash(dashKeyPressed) || backDash) {
+				DashInputHandler.BACKWARDS_DASH.reset();
+				attempted.add(Dash.DashDirection.BACKWARD);
+			}
 
-				if (DashInputHandler.RIGHT_DASH.shouldDash(dashKeyPressed)) {
-					DashInputHandler.RIGHT_DASH.reset();
-					attempted.add(Dash.DashDirection.RIGHT);
-				}
+			if (DashInputHandler.LEFT_DASH.shouldDash(dashKeyPressed) || leftDash) {
+				DashInputHandler.LEFT_DASH.reset();
+				attempted.add(Dash.DashDirection.LEFT);
+			}
 
-				// remove mirrors (cancel out)
-				if (attempted.contains(Dash.DashDirection.FORWARD) && attempted.contains(Dash.DashDirection.BACKWARD)) {
-					attempted.remove(Dash.DashDirection.FORWARD);
-					attempted.remove(Dash.DashDirection.BACKWARD);
-				}
+			if (DashInputHandler.RIGHT_DASH.shouldDash(dashKeyPressed) || rightDash) {
+				DashInputHandler.RIGHT_DASH.reset();
+				attempted.add(Dash.DashDirection.RIGHT);
+			}
 
-				if (attempted.contains(Dash.DashDirection.LEFT) && attempted.contains(Dash.DashDirection.RIGHT)) {
-					attempted.remove(Dash.DashDirection.LEFT);
-					attempted.remove(Dash.DashDirection.RIGHT);
-				}
+			// remove mirrors (cancel out)
+			if (attempted.contains(Dash.DashDirection.FORWARD) && attempted.contains(Dash.DashDirection.BACKWARD)) {
+				attempted.remove(Dash.DashDirection.FORWARD);
+				attempted.remove(Dash.DashDirection.BACKWARD);
+			}
+
+			if (attempted.contains(Dash.DashDirection.LEFT) && attempted.contains(Dash.DashDirection.RIGHT)) {
+				attempted.remove(Dash.DashDirection.LEFT);
+				attempted.remove(Dash.DashDirection.RIGHT);
 			}
 		}
 
