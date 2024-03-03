@@ -2,6 +2,7 @@ package valoeghese.dash.client;
 
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.player.Player;
 import valoeghese.dash.Dash;
 
 import java.util.function.BooleanSupplier;
@@ -35,21 +36,28 @@ public class DashInputHandler {
 
 		if (isDown && !this.wasDown) { // if newly pressed
 			this.downTimes[this.selected] = System.currentTimeMillis(); // mark time
-			this.selected = (this.selected + 1) & 0b1; // flip bit
+			this.selected ^= 1; // flip bit
 		}
 
 		this.wasDown = isDown;
 	}
 
+	/**
+	 * Check if the player should dash.
+	 * @param dashKeyPressed whether the dash key was pressed.
+	 * @return whether the player should dash. This does not check whether the player <i>is able to</i> dash. For that,
+	 * check {@link Dash#canDash(Player)}.
+	 */
 	public boolean shouldDash(boolean dashKeyPressed) {
 		if (!this.enabled.getAsBoolean()) return false; // disable!
 		// if dash key pressed or double tapped
-		return (dashKeyPressed && this.mapping.isDown() && Dash.canDash(Minecraft.getInstance().player) /*This check is done here for key, and in measure() for double-tap*/)
+		return (dashKeyPressed && this.mapping.isDown())
 				|| this.doubleTapped();
 	}
 
 	private boolean doubleTapped() {
 		if (!Dash.localConfig.doubleTapDash.get()) return false; // if double tap is disabled, don't bother checking!
+
 		long dt = this.downTimes[0] - this.downTimes[1];
 		final long maxTimeDelayMillis = Dash.localConfig.sensitivity.get();
 		return dt <= maxTimeDelayMillis && dt >= -maxTimeDelayMillis; // probably marginally faster than abs

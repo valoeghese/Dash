@@ -7,15 +7,12 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -29,10 +26,8 @@ import valoeghese.dash.network.ClientboundSyncConfigPacket;
 import valoeghese.dash.network.ServerboundDashPacket;
 
 import javax.annotation.Nullable;
-import java.io.ByteArrayInputStream;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
 public class DashClient implements ClientModInitializer {
@@ -127,39 +122,41 @@ public class DashClient implements ClientModInitializer {
 		// if dash key and only one dash direction exists, dash in that direction
 		List<Dash.DashDirection> availableDirections = Dash.activeConfig.availableDirectionsCardinal();
 
-		if (dashKeyPressed && availableDirections.size() == 1) {
-			attempted.add(availableDirections.get(0));
-		} else {
-			// otherwise, use input keys to determine dash direction
-			if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed)) {
-				DashInputHandler.FORWARD_DASH.reset();
-				attempted.add(Dash.DashDirection.FORWARD);
-			}
+		if (Dash.canDash(Minecraft.getInstance().player)) {
+			if (dashKeyPressed && availableDirections.size() == 1) {
+					attempted.add(availableDirections.get(0));
+			} else {
+				// otherwise, use input keys to determine dash direction
+				if (DashInputHandler.FORWARD_DASH.shouldDash(dashKeyPressed)) {
+					DashInputHandler.FORWARD_DASH.reset();
+					attempted.add(Dash.DashDirection.FORWARD);
+				}
 
-			if (DashInputHandler.BACKWARDS_DASH.shouldDash(dashKeyPressed)) {
-				DashInputHandler.BACKWARDS_DASH.reset();
-				attempted.add(Dash.DashDirection.BACKWARD);
-			}
+				if (DashInputHandler.BACKWARDS_DASH.shouldDash(dashKeyPressed)) {
+					DashInputHandler.BACKWARDS_DASH.reset();
+					attempted.add(Dash.DashDirection.BACKWARD);
+				}
 
-			if (DashInputHandler.LEFT_DASH.shouldDash(dashKeyPressed)) {
-				DashInputHandler.LEFT_DASH.reset();
-				attempted.add(Dash.DashDirection.LEFT);
-			}
+				if (DashInputHandler.LEFT_DASH.shouldDash(dashKeyPressed)) {
+					DashInputHandler.LEFT_DASH.reset();
+					attempted.add(Dash.DashDirection.LEFT);
+				}
 
-			if (DashInputHandler.RIGHT_DASH.shouldDash(dashKeyPressed)) {
-				DashInputHandler.RIGHT_DASH.reset();
-				attempted.add(Dash.DashDirection.RIGHT);
-			}
+				if (DashInputHandler.RIGHT_DASH.shouldDash(dashKeyPressed)) {
+					DashInputHandler.RIGHT_DASH.reset();
+					attempted.add(Dash.DashDirection.RIGHT);
+				}
 
-			// remove mirrors (cancel out)
-			if (attempted.contains(Dash.DashDirection.FORWARD) && attempted.contains(Dash.DashDirection.BACKWARD)) {
-				attempted.remove(Dash.DashDirection.FORWARD);
-				attempted.remove(Dash.DashDirection.BACKWARD);
-			}
+				// remove mirrors (cancel out)
+				if (attempted.contains(Dash.DashDirection.FORWARD) && attempted.contains(Dash.DashDirection.BACKWARD)) {
+					attempted.remove(Dash.DashDirection.FORWARD);
+					attempted.remove(Dash.DashDirection.BACKWARD);
+				}
 
-			if (attempted.contains(Dash.DashDirection.LEFT) && attempted.contains(Dash.DashDirection.RIGHT)) {
-				attempted.remove(Dash.DashDirection.LEFT);
-				attempted.remove(Dash.DashDirection.RIGHT);
+				if (attempted.contains(Dash.DashDirection.LEFT) && attempted.contains(Dash.DashDirection.RIGHT)) {
+					attempted.remove(Dash.DashDirection.LEFT);
+					attempted.remove(Dash.DashDirection.RIGHT);
+				}
 			}
 		}
 

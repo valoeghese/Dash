@@ -102,6 +102,12 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 					this.done.active = this.invalid.isEmpty();
 				});
+
+				edit.active = this.unlocked;
+
+				if (!this.unlocked) {
+					edit.onTooltip = this.disabledTooltip;
+				}
 			} else if (option instanceof ScreenPositionOption opt) {
 				WidgetConstructor<EditBox> editBoxMaker = (x, y, width, height, component) -> new EditBox(
 						this.font, x, y, width, height, component
@@ -129,6 +135,8 @@ public class DashConfigSubScreen extends SulphateScreen {
 					this.done.active = this.invalid.isEmpty();
 				});
 
+				editX.active = this.unlocked;
+
 				// Edit Y value -- when setting, use existing X value
 				label = this.addWidget(Label::new, option.getComponent("Y"), 200, 10);
 				label.colour = 0xAAAAAA;
@@ -150,6 +158,8 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 					this.done.active = this.invalid.isEmpty();
 				});
+
+				editY.active = this.unlocked;
 			} else {
 				throw new RuntimeException("Unknown option type " + option.getClass().getSimpleName());
 			}
