@@ -54,7 +54,9 @@ public class Dash {
 					DashTracker tracker = (DashTracker) player;
 
 					context.workEnqueuer().accept(() -> {
-						if (canDash(player) && tracker.getDashCooldown() >= 1.0f) { // I've heard isOnGround() is largely controlled by the client but I'm not an anticheat. I would guess anticheats modify this property server side anyway.
+						// on the server we check >= 0.98f instead of 1.0f to allow 20ms (1 tick) leniency in lag
+						// yes this could theoretically be exploited for a slight advantage, but I consider the benefits worth it.
+						if (canDash(player) && tracker.getDashCooldown() >= 0.98f) {
 							tracker.setLastDash(time);
 							// TODO check dash direction allowed against dash direction
 							// if diagonal try restore to a legal single if possible - May not implement cause client's problem
@@ -141,6 +143,8 @@ public class Dash {
 		if (player.isFallFlying()) return activeConfig.dashWhileGliding.get();
 		if (player.isInWater()) return activeConfig.dashWhileFloating.get();
 
+		// I've heard isOnGround() is largely controlled by the client but I'm not an anticheat.
+		// I would guess anticheats modify this property server side anyway.
 		return player.isOnGround() || activeConfig.dashMidair.get();
 	}
 
