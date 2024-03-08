@@ -17,7 +17,13 @@ public record ServerboundDashPacket(Dash.DashDirection direction) {
 	}
 
 	public static ServerboundDashPacket decode(FriendlyByteBuf buf) {
-		Dash.DashDirection direction = Dash.DashDirection.values()[buf.readByte()];
+		byte dirByte = buf.readByte();
+		Dash.DashDirection direction = Dash.DashDirection.FORWARD; // default if invalid value sent
+
+		if (dirByte < Dash.DashDirection.values().length) {
+			direction = Dash.DashDirection.values()[dirByte];
+		}
+
 		return new ServerboundDashPacket(direction);
 	}
 

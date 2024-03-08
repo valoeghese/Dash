@@ -59,28 +59,28 @@ public class DashClient {
 
 		// register single tap dash keys
 
-		singleDirectionKeys[0] = registry.apply(new KeyMapping(
+		singleDirectionKeys[Dash.DashDirection.FORWARD.ordinal()] = registry.apply(new KeyMapping(
 				"key.dtdash.dash_forward",
 				InputConstants.Type.KEYSYM,
 				InputConstants.UNKNOWN.getValue(), // not bound by default
 				"key.categories.dtdash"
 		));
 
-		singleDirectionKeys[1] = registry.apply(new KeyMapping(
+		singleDirectionKeys[Dash.DashDirection.BACKWARD.ordinal()] = registry.apply(new KeyMapping(
 				"key.dtdash.dash_backwards",
 				InputConstants.Type.KEYSYM,
 				InputConstants.UNKNOWN.getValue(), // not bound by default
 				"key.categories.dtdash"
 		));
 
-		singleDirectionKeys[2] = registry.apply(new KeyMapping(
+		singleDirectionKeys[Dash.DashDirection.LEFT.ordinal()] = registry.apply(new KeyMapping(
 				"key.dtdash.dash_left",
 				InputConstants.Type.KEYSYM,
 				InputConstants.UNKNOWN.getValue(), // not bound by default
 				"key.categories.dtdash"
 		));
 
-		singleDirectionKeys[3] = registry.apply(new KeyMapping(
+		singleDirectionKeys[Dash.DashDirection.RIGHT.ordinal()] = registry.apply(new KeyMapping(
 				"key.dtdash.dash_right",
 				InputConstants.Type.KEYSYM,
 				InputConstants.UNKNOWN.getValue(), // not bound by default
@@ -145,13 +145,23 @@ public class DashClient {
 		return dashKey.consumeClick();
 	}
 
+	public static boolean[] consumeDirections() {
+		boolean[] result = new boolean[singleDirectionKeys.length];
+
+		for (int i = 0; i < singleDirectionKeys.length; i++) {
+			result[i] = singleDirectionKeys[i].consumeClick();
+		}
+
+		return result;
+	}
+
 	// This code could be much better beautified by extracting commonalities but it's not gonna change any time soon and it's 1am
-	public static boolean tryDash(boolean dashKeyPressed) {
+	public static boolean tryDash(boolean dashKeyPressed, boolean[] directionKeysPressed) {
 		// always consume click, not conditionally
-		boolean fwdDash = singleDirectionKeys[0].consumeClick();
-		boolean backDash = singleDirectionKeys[1].consumeClick();
-		boolean leftDash = singleDirectionKeys[2].consumeClick();
-		boolean rightDash = singleDirectionKeys[3].consumeClick();
+		boolean fwdDash = directionKeysPressed[Dash.DashDirection.FORWARD.ordinal()];
+		boolean backDash = directionKeysPressed[Dash.DashDirection.BACKWARD.ordinal()];
+		boolean leftDash = directionKeysPressed[Dash.DashDirection.LEFT.ordinal()];
+		boolean rightDash = directionKeysPressed[Dash.DashDirection.RIGHT.ordinal()];
 
 		Set<Dash.DashDirection> attempted = new HashSet<>();
 
