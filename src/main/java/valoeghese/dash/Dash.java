@@ -54,9 +54,11 @@ public class Dash {
 					DashTracker tracker = (DashTracker) player;
 
 					context.workEnqueuer().accept(() -> {
-						// on the server we check >= 0.98f instead of 1.0f to allow 20ms (1 tick) leniency in lag
+						// on the server we have 20ms leniency for lag
 						// yes this could theoretically be exploited for a slight advantage, but I consider the benefits worth it.
-						if (canDash(player) && tracker.getDashCooldown() >= 0.98f) {
+						float twentyMs = activeConfig.cooldown.get() == 0.0f ? 0 : 0.02f / activeConfig.cooldown.get();
+
+						if (canDash(player) && tracker.getDashCooldown() >= 1.0f - twentyMs) {
 							tracker.setLastDash(time);
 							// TODO check dash direction allowed against dash direction
 							// if diagonal try restore to a legal single if possible - May not implement cause client's problem
