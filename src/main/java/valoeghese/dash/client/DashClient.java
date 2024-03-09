@@ -9,7 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -43,7 +43,7 @@ public class DashClient {
 				Dash.activeConfig = config;
 				Dash.LOGGER.info("Successfully synchronised config.");
 			} catch (Exception e) {
-				context.connection().disconnect(new TranslatableComponent("dtdash.err.sync_parse", e.toString()));
+				context.connection().disconnect(Component.translatable("dtdash.err.sync_parse", e.toString()));
 			}
 		});
 	}

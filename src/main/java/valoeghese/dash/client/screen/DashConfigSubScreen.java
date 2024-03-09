@@ -10,7 +10,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import valoeghese.dash.Dash;
 import valoeghese.dash.ScreenPosition;
 import valoeghese.dash.config.*;
@@ -43,7 +42,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 		@Override
 		public void onTooltip(Button button, PoseStack poseStack, int i, int j) {
 			Screen screen = DashConfigSubScreen.this;
-			Component text = new TranslatableComponent("screen.dtdash.config.disabled");
+			Component text = Component.translatable("screen.dtdash.config.disabled");
 
 			screen.renderTooltip(poseStack, Minecraft.getInstance().font.split(
 					text,
@@ -53,7 +52,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 
 		@Override
 		public void narrateTooltip(Consumer<Component> consumer) {
-			consumer.accept(new TranslatableComponent("screen.dtdash.config.disabled"));
+			consumer.accept(Component.translatable("screen.dtdash.config.disabled"));
 		}
 	};
 
@@ -76,12 +75,12 @@ public class DashConfigSubScreen extends SulphateScreen {
 				bn.active = this.unlocked;
 			} else if (option instanceof EnumOption<?> opt) {
 				Button bn = this.addButton(
-						option.getComponent(new TranslatableComponent("dtdash." + opt.name + "." + opt.get().toString().toLowerCase(Locale.ROOT))),
+						option.getComponent(Component.translatable("dtdash." + opt.name + "." + opt.get().toString().toLowerCase(Locale.ROOT))),
 						button -> {
 							int index = (opt.get().ordinal() + 1) % opt.getValues().length;
 							((Option<Object>) opt).set(opt.getValues()[index]);
 							this.settingsModified = true;
-							button.setMessage(option.getComponent(new TranslatableComponent("dtdash." + opt.name + "." + opt.get().toString().toLowerCase(Locale.ROOT))));
+							button.setMessage(option.getComponent(Component.translatable("dtdash." + opt.name + "." + opt.get().toString().toLowerCase(Locale.ROOT))));
 						},
 						this.unlocked ? Button.NO_TOOLTIP : this.disabledTooltip);
 
@@ -178,7 +177,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 			public void onTooltip(Button button, PoseStack poseStack, int i, int j) {
 				if (!DashConfigSubScreen.this.done.active) {
 					Screen screen = DashConfigSubScreen.this;
-					Component text = new TranslatableComponent("screen.dtdash.config.invalidOptions",
+					Component text = Component.translatable("screen.dtdash.config.invalidOptions",
 							String.join(" ", DashConfigSubScreen.this.invalid));
 
 					screen.renderTooltip(poseStack, Minecraft.getInstance().font.split(
@@ -191,7 +190,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 			@Override
 			public void narrateTooltip(Consumer<Component> consumer) {
 				if (!DashConfigSubScreen.this.done.active) {
-					Component text = new TranslatableComponent("screen.dtdash.config.invalidOptions",
+					Component text = Component.translatable("screen.dtdash.config.invalidOptions",
 							String.join(" ", DashConfigSubScreen.this.invalid));
 
 					consumer.accept(text);

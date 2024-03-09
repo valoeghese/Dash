@@ -1,7 +1,6 @@
 package valoeghese.dash.config;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -39,6 +38,6 @@ public abstract class Option<T> {
 	}
 
 	public Component getComponent(Object... parameters) {
-		return new TranslatableComponent("options.dtdash." + this.name, parameters);
+		return Component.translatable("options.dtdash." + this.name, parameters);
 	}
 }

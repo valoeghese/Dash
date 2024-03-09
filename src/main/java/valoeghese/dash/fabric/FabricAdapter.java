@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import valoeghese.dash.adapter.Adapter;
 import valoeghese.dash.adapter.C2SContext;
@@ -49,7 +49,7 @@ public class FabricAdapter implements Adapter {
 
 				handler.accept(packetInstance, context);
 			} catch (Exception e) {
-				packetListener.getConnection().disconnect(new TextComponent(e.toString()));
+				packetListener.getConnection().disconnect(Component.literal(e.toString()));
 			}
 		});
 	}

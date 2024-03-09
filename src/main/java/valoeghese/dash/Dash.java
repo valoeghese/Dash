@@ -1,6 +1,6 @@
 package valoeghese.dash;
 
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -131,7 +131,7 @@ public class Dash {
 			// send properties
 			Adapter.INSTANCE.sendToPlayer(handler.player, new ClientboundSyncConfigPacket(properties));
 		} catch (IOException e) {
-			handler.disconnect(new TranslatableComponent("dtdash.err.sync", e.toString()));
+			handler.disconnect(Component.translatable("dtdash.err.sync", e.toString()));
 		}
 	}
 

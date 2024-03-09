@@ -3,7 +3,7 @@ package valoeghese.dash.fabric;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import valoeghese.dash.adapter.Adapter;
 import valoeghese.dash.adapter.Packet;
 import valoeghese.dash.adapter.client.ClientAdapter;
@@ -21,7 +21,7 @@ public class FabricClientAdapter implements ClientAdapter {
 
 				handler.accept(packetInstance, context);
 			} catch (Exception e) {
-				ntwkHandler.getConnection().disconnect(new TextComponent(e.toString()));
+				ntwkHandler.getConnection().disconnect(Component.literal(e.toString()));
 			}
 		});
 	}
