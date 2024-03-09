@@ -18,6 +18,7 @@ public class MixinMinecraft {
 
 	@Inject(at = @At("HEAD"), method = "handleKeybinds")
 	private void afterVanillaHandleKeybinds(CallbackInfo ci) {
+		// TODO in the future have some sort of buffer for air
 		if (Dash.canDash(this.player) && ((DashTracker) this.player).getDashCooldown() >= 0.98f) {
 			DashInputHandler.FORWARD_DASH.measure();
 			DashInputHandler.BACKWARDS_DASH.measure();
