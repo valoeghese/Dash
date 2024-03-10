@@ -1,13 +1,14 @@
 package valoeghese.dash.client.screen;
 
+import benzenestudios.sulphate.ClassicButton;
 import benzenestudios.sulphate.SulphateScreen;
 import benzenestudios.sulphate.WidgetConstructor;
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import valoeghese.dash.Dash;
@@ -20,7 +21,6 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static net.minecraft.network.chat.CommonComponents.OPTION_OFF;
 import static net.minecraft.network.chat.CommonComponents.OPTION_ON;
@@ -38,23 +38,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 	private AbstractButton done = null;
 	private final Set<String> invalid = new HashSet<>();
 
-	private final Button.OnTooltip disabledTooltip = new Button.OnTooltip() {
-		@Override
-		public void onTooltip(Button button, PoseStack poseStack, int i, int j) {
-			Screen screen = DashConfigSubScreen.this;
-			Component text = Component.translatable("screen.dtdash.config.disabled");
-
-			screen.renderTooltip(poseStack, Minecraft.getInstance().font.split(
-					text,
-					Math.max(screen.width / 2 - 43, 170)
-			), i, j + 18);
-		}
-
-		@Override
-		public void narrateTooltip(Consumer<Component> consumer) {
-			consumer.accept(Component.translatable("screen.dtdash.config.disabled"));
-		}
-	};
+	private final Tooltip disabledTooltip = Tooltip.create(Component.translatable("screen.dtdash.config.disabled"));
 
 	@Override
 	protected void addWidgets() {
@@ -69,10 +53,13 @@ public class DashConfigSubScreen extends SulphateScreen {
 							opt.set(!opt.get());
 							this.settingsModified = true;
 							button.setMessage(option.getComponent(opt.get() ? OPTION_ON : OPTION_OFF));
-						},
-						this.unlocked ? Button.NO_TOOLTIP : this.disabledTooltip);
+						});
 
 				bn.active = this.unlocked;
+
+				if (!this.unlocked) {
+					bn.setTooltip(this.disabledTooltip);
+				}
 			} else if (option instanceof EnumOption<?> opt) {
 				Button bn = this.addButton(
 						option.getComponent(Component.translatable("dtdash." + opt.name + "." + opt.get().toString().toLowerCase(Locale.ROOT))),
@@ -81,10 +68,13 @@ public class DashConfigSubScreen extends SulphateScreen {
 							((Option<Object>) opt).set(opt.getValues()[index]);
 							this.settingsModified = true;
 							button.setMessage(option.getComponent(Component.translatable("dtdash." + opt.name + "." + opt.get().toString().toLowerCase(Locale.ROOT))));
-						},
-						this.unlocked ? Button.NO_TOOLTIP : this.disabledTooltip);
+						});
 
 				bn.active = this.unlocked;
+
+				if (!this.unlocked) {
+					bn.setTooltip(this.disabledTooltip);
+				}
 			} else if (option instanceof NumericalOption<?> opt) {
 				Label label = this.addWidget(Label::new, option.getComponent(), 200, 10);
 				label.colour = 0xAAAAAA;
@@ -109,7 +99,7 @@ public class DashConfigSubScreen extends SulphateScreen {
 				edit.addToGroup(editBoxes);
 
 				if (!this.unlocked) {
-					edit.onTooltip = this.disabledTooltip;
+					edit.setTooltip(this.disabledTooltip);
 				}
 			} else if (option instanceof ScreenPositionOption opt) {
 				WidgetConstructor<EditBoxPlus> editBoxMaker = (x, y, width, height, component) -> new EditBoxPlus(
@@ -171,16 +161,16 @@ public class DashConfigSubScreen extends SulphateScreen {
 			}
 		}
 
-		this.done = this.addDone((x, y, width, height, text, onPress, onTooltip) -> new Button(
-				x, y, width, height, text, onPress, new Button.OnTooltip() {
+		this.done = this.addDone((x, y, width, height, text, onPress, onTooltip) -> new ClassicButton(
+				x, y, width, height, text, onPress, new ClassicButton.OnTooltip() {
 			@Override
-			public void onTooltip(Button button, PoseStack poseStack, int i, int j) {
+			public void onTooltip(Button button, GuiGraphics gui, int i, int j) {
 				if (!DashConfigSubScreen.this.done.active) {
 					Screen screen = DashConfigSubScreen.this;
 					Component text = Component.translatable("screen.dtdash.config.invalidOptions",
 							String.join(" ", DashConfigSubScreen.this.invalid));
 
-					screen.renderTooltip(poseStack, Minecraft.getInstance().font.split(
+					gui.renderTooltip(Minecraft.getInstance().font, Minecraft.getInstance().font.split(
 							text,
 							Math.max(screen.width / 2 - 43, 170)
 					), i, j + 18);

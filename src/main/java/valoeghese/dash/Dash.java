@@ -50,7 +50,7 @@ public class Dash {
 				ServerboundDashPacket.PACKET,
 				(packet, context) -> {
 					ServerPlayer player = context.player();
-					long time = player.level.getGameTime();
+					long time = player.level().getGameTime();
 					DashTracker tracker = (DashTracker) player;
 
 					context.workEnqueuer().accept(() -> {

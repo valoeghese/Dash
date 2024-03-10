@@ -1,11 +1,8 @@
 package valoeghese.dash.client.screen;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -29,7 +26,7 @@ public class EditBoxPlus extends EditBox {
 			if (this.group != null) {
 				for (EditBoxPlus editBox : this.group) {
 					if (editBox != this) {
-						editBox.setFocus(false);
+						editBox.setFocused(false);
 					}
 				}
 			}
@@ -37,27 +34,6 @@ public class EditBoxPlus extends EditBox {
 			return true;
 		} else {
 			return false;
-		}
-	}
-
-
-	// Tooltip
-
-	public @Nullable Button.OnTooltip onTooltip; // NB button parameter will be null
-
-	@Override
-	public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-		super.renderButton(poseStack, mouseX, mouseY, partialTick);
-
-		if (this.isHoveredOrFocused()) {
-			this.renderToolTip(poseStack, mouseX, mouseY);
-		}
-	}
-
-	@Override
-	public void renderToolTip(PoseStack poseStack, int mouseX, int mouseY) {
-		if (this.onTooltip != null) {
-			this.onTooltip.onTooltip(null, poseStack, mouseX, mouseY);
 		}
 	}
 }
