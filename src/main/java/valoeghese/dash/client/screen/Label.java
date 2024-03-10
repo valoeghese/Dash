@@ -25,7 +25,7 @@ public class Label extends AbstractWidget {
 	@Override
 	public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
 		int renderY = this.getY() + this.height - Minecraft.getInstance().font.lineHeight;
-		gui.drawString(Minecraft.getInstance().font, this.getMessage(), this.getY(), renderY, this.colour);
+		gui.drawString(Minecraft.getInstance().font, this.getMessage(), this.getX(), renderY, this.colour);
 	}
 
 	@Override
