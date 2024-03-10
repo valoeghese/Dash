@@ -44,12 +44,12 @@ public class FabricAdapter implements Adapter {
 	public <T> void registerServerboundReceiver(Packet<T> packet, BiConsumer<T, C2SContext> handler) {
 		ServerPlayNetworking.registerGlobalReceiver(packet.id(), (server, player, packetListener, buf, responseSender) -> {
 			try {
-				C2SContext context = new C2SContext(player, packetListener.getConnection(), server::execute);
+				C2SContext context = new C2SContext(player, packetListener, server::execute);
 				T packetInstance = packet.decoder().apply(buf);
 
 				handler.accept(packetInstance, context);
 			} catch (Exception e) {
-				packetListener.getConnection().disconnect(Component.literal(e.toString()));
+				packetListener.disconnect(Component.literal(e.toString()));
 			}
 		});
 	}

@@ -1,9 +1,8 @@
 package valoeghese.dash.client.screen;
 
-import benzenestudios.sulphate.Anchor;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -19,14 +18,14 @@ public class Label extends AbstractWidget {
 	public int colour = 0xFFFFFF;
 
 	@Override
-	public void updateNarration(NarrationElementOutput narration) {
+	public void updateWidgetNarration(NarrationElementOutput narration) {
 		narration.add(NarratedElementType.HINT, this.getMessage());
 	}
 
 	@Override
-	public void render(PoseStack stack, int mouseX, int mouseY, float partialTick) {
-		int renderY = this.y + this.height - Minecraft.getInstance().font.lineHeight;
-		GuiComponent.drawString(stack, Minecraft.getInstance().font, this.getMessage(), this.x, renderY, this.colour);
+	public void renderWidget(GuiGraphics gui, int mouseX, int mouseY, float partialTick) {
+		int renderY = this.getY() + this.height - Minecraft.getInstance().font.lineHeight;
+		gui.drawString(Minecraft.getInstance().font, this.getMessage(), this.getY(), renderY, this.colour);
 	}
 
 	@Override
