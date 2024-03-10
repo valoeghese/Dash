@@ -135,8 +135,8 @@ public class DashClient {
 						.y(window.getGuiScaledWidth(), window.getGuiScaledHeight());
 //				System.out.println(x + " " + y);
 
-				gui.blit(DASH_ICONS, stack, x, y - 8, 0, 0, 32, 32); // render the background
-				gui.blit(DASH_ICONS, stack, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
+				gui.blit(DASH_ICONS, x, y - 8, 0, 0, 32, 32); // render the background
+				gui.blit(DASH_ICONS, x, y + 32 - blitHeight - 8, 0, 32 + (32 - blitHeight), 32, blitHeight); // render the foreground
 				stack.popPose();
 			}
 		}
