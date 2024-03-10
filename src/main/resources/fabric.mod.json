@@ -19,10 +19,13 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "valoeghese.dash.Dash"
+      "valoeghese.dash.fabric.CommonInitialiser"
     ],
     "client": [
-      "valoeghese.dash.client.DashClient"
+      "valoeghese.dash.fabric.ClientInitialiser"
+    ],
+    "modmenu": [
+      "valoeghese.dash.client.ModMenuDashConfig"
     ]
   },
   "mixins": [

@@ -13,7 +13,7 @@ public class MixinKeyMapping {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/language/I18n;get(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;")
 	)
 	private String e(String translateKey, Object[] parameters) {
-		if (translateKey.startsWith("key.dtdash")) {
+		if (translateKey.startsWith("key.dtdash")) { // move dash to the end of movement
 			return "zzzzzzzz";
 		}
 		else {

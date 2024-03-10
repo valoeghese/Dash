@@ -23,7 +23,7 @@ public abstract class MixinServerPlayer extends Player implements DashTracker {
 	@Override
 	public float getDashCooldown() {
 		long dTicks = this.level().getGameTime() - this.dash_lastServerDashTicks;
-		return (float) (dTicks) / Dash.config.cooldown();
+		return (float) (dTicks) / Dash.activeConfig.cooldown.get();
 	}
 
 	@Override
