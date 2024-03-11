@@ -1,4 +1,4 @@
-package valoeghese.dash.fabric;
+/*package valoeghese.dash.fabric;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -17,3 +17,4 @@ public class CommonInitialiser implements ModInitializer {
 		ServerPlayConnectionEvents.INIT.register((handler, server) -> common.onClientJoinGame(handler));
 	}
 }
+*/ // fabric code has been kept and commented out to prevent merge conflicts for future changes

@@ -1,4 +1,4 @@
-package valoeghese.dash.fabric;
+/*package valoeghese.dash.fabric;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -41,3 +41,4 @@ public class FabricClientAdapter implements ClientAdapter {
 		ClientPlayNetworking.send(packetType.id(), buf);
 	}
 }
+*/

@@ -1,4 +1,4 @@
-package valoeghese.dash.fabric;
+/*package valoeghese.dash.fabric;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -70,3 +70,4 @@ public class FabricAdapter implements Adapter {
 	}
 }
 
+*/
