@@ -1,14 +1,11 @@
 package valoeghese.dash.forge;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkEvent;
-import valoeghese.dash.adapter.C2SContext;
 import valoeghese.dash.adapter.client.S2CContext;
 
 import java.util.function.BiConsumer;

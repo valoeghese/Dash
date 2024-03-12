@@ -7,6 +7,7 @@
     "MixinServerPlayer"
   ],
   "client": [
+    "forge.MixinForgeModsScreen",
     "MixinGui",
     "MixinKeyMapping",
     "MixinLocalPlayer",
