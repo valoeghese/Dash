@@ -1,13 +1,11 @@
 package valoeghese.dash.client.screen;
 
 import benzenestudios.sulphate.SulphateScreen;
-import benzenestudios.sulphate.WidgetConstructor;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -21,7 +19,6 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static net.minecraft.network.chat.CommonComponents.OPTION_OFF;
 import static net.minecraft.network.chat.CommonComponents.OPTION_ON;
