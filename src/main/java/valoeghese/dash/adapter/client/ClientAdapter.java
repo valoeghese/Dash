@@ -2,7 +2,7 @@ package valoeghese.dash.adapter.client;
 
 import valoeghese.dash.adapter.Adapter;
 import valoeghese.dash.adapter.Packet;
-import valoeghese.dash.fabric.FabricClientAdapter;
+import valoeghese.dash.forge.ForgeClientAdapter;
 
 import java.util.function.BiConsumer;
 
@@ -29,5 +29,5 @@ public interface ClientAdapter {
 	/**
 	 * The adapter instance for this current platform.
 	 */
-	ClientAdapter INSTANCE = new FabricClientAdapter();
+	ClientAdapter INSTANCE = new ForgeClientAdapter();
 }

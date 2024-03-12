@@ -1,7 +1,7 @@
 package valoeghese.dash.adapter;
 
 import net.minecraft.server.level.ServerPlayer;
-import valoeghese.dash.fabric.FabricAdapter;
+import valoeghese.dash.forge.ForgeAdapter;
 
 import java.io.File;
 import java.util.function.BiConsumer;
@@ -52,5 +52,5 @@ public interface Adapter {
 	/**
 	 * The adapter instance for this current platform.
 	 */
-	Adapter INSTANCE = new FabricAdapter();
+	Adapter INSTANCE = new ForgeAdapter();
 }
