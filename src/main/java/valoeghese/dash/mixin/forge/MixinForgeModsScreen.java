@@ -21,7 +21,7 @@ public class MixinForgeModsScreen {
 
 	@Inject(at = @At("RETURN"), method = "updateCache")
 	private void onUpdateCache(CallbackInfo info) {
-		if (selected.getInfo().getModId().equals(DashMod.MOD_ID)) {
+		if (selected != null && selected.getInfo().getModId().equals(DashMod.MOD_ID)) {
 			configButton.active = true;
 		}
 	}

@@ -43,7 +43,7 @@ public class DashMod {
 	private void setupClient(FMLClientSetupEvent t) {
 		client.setupNetwork();
 
-		ModContainer thisMod = ModList.get().getModContainerById("minecraft")
+		ModContainer thisMod = ModList.get().getModContainerById("dtdash")
 				.orElseThrow(() -> new RuntimeException("Double Tap Dash cannot find... double tap dash?!"));
 
 		thisMod.registerExtensionPoint(ConfigGuiHandler.ConfigGuiFactory.class, () -> new ConfigGuiHandler.ConfigGuiFactory(
