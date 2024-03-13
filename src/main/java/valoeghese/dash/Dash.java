@@ -6,8 +6,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import valoeghese.dash.adapter.Adapter;
 import valoeghese.dash.config.DashConfig;
 import valoeghese.dash.config.SynchronisedConfig;
@@ -135,7 +135,7 @@ public class Dash {
 		}
 	}
 
-	public static final Logger LOGGER = LoggerFactory.getLogger("Double-Tap Dash");
+	public static final Logger LOGGER = LogManager.getLogger("Double-Tap Dash");
 
 	public static DashConfig localConfig;
 	public static SynchronisedConfig activeConfig; // may be either localConfig or the server config
