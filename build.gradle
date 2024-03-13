@@ -56,7 +56,7 @@ minecraft {
         server {
             properties 'mixin.env.remapRefMap': 'true'
             property 'mixin.env.refMapRemappingFile', "${project.projectDir}/build/createSrgToMcp/output.srg"
-            args "-mixin.config=${archivesBaseName}.mixins.json", "-mixin.config=${archivesBaseName}_forge.mixins.json"
+            args "-mixin.config=${archivesBaseName}.mixins.json"
             arg "-mixin.config="+archivesBaseName+".mixins.json"
 
             // Recommended logging data for a userdev environment
@@ -104,7 +104,7 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "dtdash-forge",
+            "Specification-Title": "dtdash",
             "Specification-Vendor": "Valoeghese",
             "Specification-Version": "1.0.0",
             "Implementation-Title": project.name,
